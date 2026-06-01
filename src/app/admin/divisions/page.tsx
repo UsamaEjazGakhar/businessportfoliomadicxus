@@ -4,6 +4,8 @@ import { useToast } from "@/app/admin/layout";
 
 import { useState, useEffect } from "react";
 
+type ApiError = { path?: string[]; message: string };
+
 interface Division {
   id: string;
   title: string;
@@ -99,22 +101,22 @@ export default function DivisionsAdmin() {
       });
 
       const data = await res.json();
-        if (data.success) {
-          setModalOpen(false);
-          fetchDivisions();
-        } else {
-          // Populate field-specific errors if provided
-          if (data.errors && Array.isArray(data.errors)) {
-            const fieldErrors: Record<string, string> = {};
-            data.errors.forEach((err: any) => {
-              const field = err.path && err.path[0] ? err.path[0] : 'form';
-              fieldErrors[field] = err.message;
-            });
-            setValidationErrors(fieldErrors);
-          }
-          const errMsg = data.message || (data.errors ? JSON.stringify(data.errors) : "An error occurred while saving");
-          setError(errMsg);
+      if (data.success) {
+        setModalOpen(false);
+        fetchDivisions();
+      } else {
+        // Populate field-specific errors if provided
+        if (data.errors && Array.isArray(data.errors)) {
+          const fieldErrors: Record<string, string> = {};
+          (data.errors as ApiError[]).forEach((err) => {
+            const field = err.path && err.path[0] ? err.path[0] : 'form';
+            fieldErrors[field] = err.message;
+          });
+          setValidationErrors(fieldErrors);
         }
+        const errMsg = data.message || (data.errors ? JSON.stringify(data.errors) : "An error occurred while saving");
+        setError(errMsg);
+      }
     } catch {
       setError("Failed to save division");
     } finally {

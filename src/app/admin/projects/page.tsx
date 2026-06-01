@@ -181,7 +181,8 @@ const [error, setError] = useState("");
       } else {
         // API validation errors (Zod)
         if (data.errors && Array.isArray(data.errors)) {
-          const msgs = data.errors.map((e: any) => e.message).join("; ");
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const msgs = (data.errors as any[]).map((e) => e.message).join('; ');
           setError(msgs);
           showToast(msgs, "error");
         } else {

@@ -4,6 +4,8 @@ import { useToast } from "@/app/admin/layout";
 
 import { useState, useEffect } from "react";
 
+type ApiError = { path?: string[]; message: string };
+
 interface Faq {
   id: string;
   question: string;
@@ -106,7 +108,7 @@ export default function FaqsAdmin() {
       } else {
         // Handle validation errors from Zod (array of issues)
         if (data.errors && Array.isArray(data.errors)) {
-          const msgs = data.errors.map((e: any) => e.message).join('; ');
+          const msgs = (data.errors as ApiError[]).map(err => err.message).join('; ');
           setError(msgs);
           showToast(msgs, 'error');
         } else {

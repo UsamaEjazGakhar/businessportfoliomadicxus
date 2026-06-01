@@ -1,9 +1,10 @@
 "use client";
 
-import { useToast } from "@/app/admin/layout";
+
 
 
 import { useState, useEffect } from "react";
+import { useToast } from "@/app/admin/layout";
 
 interface Testimonial {
   id: string;
@@ -22,6 +23,7 @@ export default function TestimonialsAdmin() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
+const { showToast } = useToast();
 
   // Form states
   const [authorName, setAuthorName] = useState("");

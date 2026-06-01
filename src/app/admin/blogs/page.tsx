@@ -3,6 +3,16 @@
 import { useState } from "react";
 import { useToast } from "@/app/admin/layout";
 
+interface Blog {
+  id: string;
+  title: string;
+  author: string;
+  category: string;
+  status: string;
+  publishedAt: string;
+  readTime: string;
+}
+
 export default function BlogsAdmin() {
   const { showToast } = useToast();
   const [blogs] = useState([
