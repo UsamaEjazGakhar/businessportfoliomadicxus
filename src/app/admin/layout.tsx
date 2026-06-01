@@ -1,0 +1,329 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
+
+const NAV_ITEMS = [
+  { icon: "📊", label: "Dashboard", href: "/admin" },
+  { icon: "✨", label: "Hero Section", href: "/admin/hero" },
+  { icon: "📂", label: "Business Units", href: "/admin/divisions" },
+  { icon: "💼", label: "Project Grid", href: "/admin/projects" },
+  { icon: "📝", label: "Blog Editor", href: "/admin/blogs" },
+  { icon: "🌟", label: "Testimonials", href: "/admin/testimonials" },
+  { icon: "❓", label: "FAQs Manager", href: "/admin/faqs" },
+  { icon: "📨", label: "Contact Leads", href: "/admin/inquiries" },
+  { icon: "⚙️", label: "Settings", href: "/admin/settings" },
+];
+
+type ToastType = "success" | "error" | "info";
+
+interface Toast {
+  id: number;
+  message: string;
+  type: ToastType;
+}
+
+interface ToastContextType {
+  showToast: (message: string, type?: ToastType) => void;
+}
+
+const ToastContext = createContext<ToastContextType | undefined>(undefined);
+
+export function useToast() {
+  const context = useContext(ToastContext);
+  if (!context) {
+    throw new Error("useToast must be used within a ToastProvider");
+  }
+  return context;
+}
+
+function AdminLayoutInner({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const { data: session } = useSession();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  // Toast trigger
+  const showToast = useCallback((message: string, type: ToastType = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 4000);
+  }, []);
+
+  // Close sidebar on navigation change (mobile)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
+
+  return (
+    <ToastContext.Provider value={{ showToast }}>
+      <div style={{ display: "flex", minHeight: "100vh", position: "relative" }}>
+        
+        {/* Mobile Backdrop */}
+        {sidebarOpen && (
+          <div
+            onClick={() => setSidebarOpen(false)}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "rgba(11, 18, 32, 0.4)",
+              backdropFilter: "blur(4px)",
+              zIndex: 999,
+              transition: "opacity 0.2s ease",
+            }}
+          />
+        )}
+
+        {/* Sidebar */}
+        <aside
+          style={{
+            background: "#0B1220",
+            width: "260px",
+            flexShrink: 0,
+            padding: "24px 0",
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "auto",
+            position: "fixed",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            zIndex: 1000,
+            transition: "left 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          }}
+          className="admin-sidebar"
+        >
+          {/* Logo */}
+          <div style={{ padding: "0 20px", marginBottom: "32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Link href="/admin" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
+              <div style={{
+                width: "36px", height: "36px",
+                background: "linear-gradient(135deg,#0F4C81,#14B8A6)",
+                borderRadius: "9px",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: "#fff", fontWeight: 900, fontSize: "16px", fontStyle: "italic",
+              }}>M</div>
+              <div>
+                <div style={{ fontSize: "16px", fontWeight: 800, color: "#fff" }}>
+                  Medic<span style={{ color: "#14B8A6" }}>xus</span>
+                </div>
+                <div style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "1.5px", color: "#94A3B8", textTransform: "uppercase" }}>
+                  Admin Panel
+                </div>
+              </div>
+            </Link>
+
+            {/* Mobile close button */}
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="sidebar-close-btn"
+              style={{
+                background: "rgba(255, 255, 255, 0.05)",
+                border: "none",
+                borderRadius: "6px",
+                color: "#fff",
+                fontSize: "16px",
+                cursor: "pointer",
+                padding: "4px 8px",
+                display: "none",
+              }}
+            >✕</button>
+          </div>
+
+          {/* Nav Items */}
+          <nav style={{ flex: 1, padding: "0 12px" }}>
+            {NAV_ITEMS.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link key={item.href} href={item.href} style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  padding: "10px 14px",
+                  borderRadius: "10px",
+                  marginBottom: "4px",
+                  textDecoration: "none",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  color: isActive ? "#fff" : "rgba(255,255,255,.5)",
+                  background: isActive ? "rgba(20,184,166,.15)" : "transparent",
+                  transition: "all .2s",
+                }}>
+                  <span style={{ fontSize: "16px" }}>{item.icon}</span>
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* User Info */}
+          {session?.user && (
+            <div style={{ padding: "16px 20px", borderTop: "1px solid rgba(255,255,255,.08)" }}>
+              <div style={{ fontSize: "13px", fontWeight: 600, color: "#fff", marginBottom: "4px" }}>
+                {session.user.name}
+              </div>
+              <div style={{
+                display: "inline-block", fontSize: "10px", fontWeight: 700,
+                color: "#14B8A6", background: "rgba(20,184,166,.12)",
+                padding: "2px 8px", borderRadius: "100px", letterSpacing: "1px",
+                textTransform: "uppercase", marginBottom: "12px",
+              }}>
+                {session.user.role}
+              </div>
+              <button
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                style={{
+                  display: "block", width: "100%", padding: "8px",
+                  background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.1)",
+                  borderRadius: "8px", color: "rgba(255,255,255,.5)", fontSize: "13px",
+                  cursor: "pointer", transition: "all .2s",
+                }}
+              >Sign Out</button>
+            </div>
+          )}
+        </aside>
+
+        {/* Main Content Area */}
+        <main
+          style={{
+            flex: 1,
+            background: "#F8FAFC",
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            transition: "margin-left 0.3s ease",
+          }}
+          className="admin-main"
+        >
+          {/* Top Header */}
+          <header style={{
+            background: "#fff", borderBottom: "1px solid #E2E8F0",
+            padding: "16px 32px", display: "flex", alignItems: "center", justifyContent: "space-between",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+              {/* Hamburger Icon */}
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="hamburger-btn"
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "20px",
+                  cursor: "pointer",
+                  display: "none",
+                  padding: 0,
+                  color: "#0F172A",
+                }}
+              >☰</button>
+              <div style={{ fontSize: "14px", color: "#475569" }} className="welcome-text">
+                Welcome back, <strong style={{ color: "#0F172A" }}>{session?.user?.name || "Admin"}</strong>
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{
+                width: "8px", height: "8px", borderRadius: "50%",
+                background: "#22c55e", display: "inline-block",
+              }} />
+              <span style={{ fontSize: "12px", color: "#94A3B8" }}>Database Connected</span>
+            </div>
+          </header>
+
+          {/* Page Content */}
+          <div style={{ padding: "32px", flex: 1 }}>
+            {children}
+          </div>
+        </main>
+
+        {/* Floating Premium Toast Notifications */}
+        <div style={{
+          position: "fixed",
+          bottom: "24px",
+          right: "24px",
+          zIndex: 100000,
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+          pointerEvents: "none",
+        }}>
+          {toasts.map((t) => (
+            <div
+              key={t.id}
+              style={{
+                pointerEvents: "auto",
+                background: t.type === "success" ? "#EFF6FF" : t.type === "error" ? "#FEF2F2" : "#F8FAFC",
+                border: `1.5px solid ${t.type === "success" ? "#3B82F6" : t.type === "error" ? "#EF4444" : "#64748B"}`,
+                color: t.type === "success" ? "#1E40AF" : t.type === "error" ? "#991B1B" : "#1E293B",
+                boxShadow: "0 10px 30px rgba(15,76,129,0.08)",
+                borderRadius: "14px",
+                padding: "16px 20px",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                minWidth: "280px",
+                maxWidth: "420px",
+                animation: "toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                backdropFilter: "blur(8px)",
+              }}
+            >
+              <div style={{
+                width: "24px", height: "24px", borderRadius: "50%",
+                background: t.type === "success" ? "#3B82F6" : t.type === "error" ? "#EF4444" : "#64748B",
+                color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: "12px", fontWeight: 800, flexShrink: 0
+              }}>
+                {t.type === "success" ? "✓" : t.type === "error" ? "✕" : "ℹ"}
+              </div>
+              <span style={{ fontSize: "14px", fontWeight: 600 }}>{t.message}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* CSS rules for screen widths */}
+        <style>{`
+          @keyframes toastSlideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+          }
+          
+          .admin-main {
+            margin-left: 260px;
+          }
+
+          @media (max-width: 900px) {
+            .admin-sidebar {
+              left: ${sidebarOpen ? "0" : "-260px"} !important;
+            }
+            .sidebar-close-btn {
+              display: block !important;
+            }
+            .hamburger-btn {
+              display: block !important;
+            }
+            .admin-main {
+              margin-left: 0 !important;
+            }
+            .welcome-text {
+              display: none !important;
+            }
+          }
+        `}</style>
+      </div>
+    </ToastContext.Provider>
+  );
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <SessionProvider>
+      <AdminLayoutInner>{children}</AdminLayoutInner>
+    </SessionProvider>
+  );
+}

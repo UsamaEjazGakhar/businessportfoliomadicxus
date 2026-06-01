@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── SOVEREIGN BLUE DESIGN SYSTEM ── */
+:root {
+  --navy: #0F4C81;
+  --teal: #14B8A6;
+  --amber: #F59E0B;
+  --dark: #0B1220;
+  --bg: #F8FAFC;
+  --white: #FFFFFF;
+  --border: #E2E8F0;
+  --body: #475569;
+  --heading: #0F172A;
+  --muted: #94A3B8;
+  --light-blue: #EFF6FF;
+  --light-teal: #F0FDFA;
+  --light-amber: #FFFBEB;
+  --light-purple: #F5F3FF;
+}
+
+/* ── BASE RESET ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-outfit), 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--heading);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--navy);
+  border-radius: 3px;
+}
+
+/* ── KEYFRAME ANIMATIONS ── */
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: .5;
+    transform: scale(1.4);
+  }
+}
+
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ── ANIMATION UTILITIES ── */
+.animate-pulse-dot {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.animate-fade-down {
+  animation: fadeDown 0.6s ease both;
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.7s ease both;
+}
+
+.animate-fade-up-delay-1 {
+  animation: fadeUp 0.7s 0.1s ease both;
+}
+
+.animate-fade-up-delay-2 {
+  animation: fadeUp 0.7s 0.2s ease both;
+}
+
+.animate-fade-up-delay-3 {
+  animation: fadeUp 0.7s 0.3s ease both;
+}
+
+.animate-fade-up-delay-4 {
+  animation: fadeUp 0.7s 0.4s ease both;
+}
+
+/* ── ICON COLOR BACKGROUNDS ── */
+.icon-blue {
+  background: var(--light-blue);
+}
+
+.icon-teal {
+  background: var(--light-teal);
+}
+
+.icon-amber {
+  background: var(--light-amber);
+}
+
+.icon-purple {
+  background: var(--light-purple);
+}
+
+/* ── CARD HOVER TOP BORDER EFFECT ── */
+.card-hover-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-hover-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--navy), var(--teal));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s;
+}
+
+.card-hover-border:hover::before {
+  transform: scaleX(1);
+}
+
+/* ── ADMIN SIDEBAR ── */
+.admin-sidebar {
+  background: var(--dark);
+  min-height: 100vh;
+  width: 260px;
+  flex-shrink: 0;
+}
+
+/* ── LOADING SKELETON ── */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
