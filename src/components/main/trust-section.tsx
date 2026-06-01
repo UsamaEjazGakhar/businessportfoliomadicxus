@@ -9,19 +9,24 @@ const TRUST_ITEMS = [
 
 export default function TrustSection() {
   return (
-    <section style={{ padding: "96px 64px", background: "#F8FAFC" }}>
+    <section style={{ padding: "64px 48px", background: "#F8FAFC" }}>
       <p style={{
         fontSize: "12px", fontWeight: 700, letterSpacing: "2.5px",
-        textTransform: "uppercase", color: "#14B8A6", marginBottom: "12px",
-      }}>Why Medicxus</p>
+        textTransform: "uppercase", color: "#14B8A6", marginBottom: "8px",
+      }}>Trusted Healthcare Technology Group — medicxus.com</p>
       <h2 style={{
         fontSize: "clamp(28px,3.5vw,42px)", fontWeight: 800,
-        color: "#0F172A", letterSpacing: "-1.5px", lineHeight: 1.2, marginBottom: "14px",
-      }}>Built on Trust, Driven by Excellence</h2>
+        color: "#0F172A", letterSpacing: "-1.5px", lineHeight: 1.2, marginBottom: "8px",
+      }}>Empowering Healthcare.<br/>Transforming Lives.</h2>
+      <p style={{
+        fontSize: "14px", color: "#475569", lineHeight: 1.6, marginBottom: "12px",
+      }}>Medicxus Group bridges world-class health education, advanced diagnostics, international MBBS consultancy and cutting‑edge healthcare IT — all under one trusted roof.</p>
+      <a href="/divisions" style={{fontSize: "14px", color: "#14B8A6", textDecoration: "none", marginRight: "16px"}}>Explore Our Divisions ↗</a>
+      <a href="/about" style={{fontSize: "14px", color: "#14B8A6", textDecoration: "none"}}>Learn About Us</a>
 
       <div style={{
         display: "grid", gridTemplateColumns: "repeat(3,1fr)",
-        gap: "28px", marginTop: "52px",
+        gap: "28px", marginTop: "32px",
       }}>
         {TRUST_ITEMS.map((item) => (
           <div key={item.title} className="trust-card" style={{
