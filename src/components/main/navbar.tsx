@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -49,9 +50,26 @@ export default function Navbar() {
         </div>
       </Link>
 
-      {/* Desktop Nav Links */}
-      <ul style={{ display: "flex", alignItems: "center", gap: "8px", listStyle: "none", margin: 0, padding: 0 }}
-        className="hidden-mobile">
+      {/* Hamburger button for mobile */}
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Toggle navigation menu"
+        className="hamburger-btn"
+        style={{
+          display: "none",
+          background: "transparent",
+          border: "none",
+          fontSize: "24px",
+          cursor: "pointer",
+          color: "#0F4C81",
+          marginRight: "16px",
+        }}
+      >
+        &#9776;
+      </button>
+
+      {/* Desktop navigation */}
+      <ul className="desktop-nav" style={{ display: "flex", alignItems: "center", gap: "8px", listStyle: "none", margin: 0, padding: 0 }}>
         {[
           { label: "Home", href: "/" },
           { label: "About", href: "/about" },
@@ -63,8 +81,14 @@ export default function Navbar() {
             <Link
               href={item.href}
               style={{
-                textDecoration: "none", color: "#475569", fontSize: "14px", fontWeight: 500,
-                padding: "8px 14px", borderRadius: "8px", transition: "all .2s", display: "block",
+                textDecoration: "none",
+                color: "#475569",
+                fontSize: "14px",
+                fontWeight: 500,
+                padding: "8px 14px",
+                borderRadius: "8px",
+                transition: "all .2s",
+                display: "block",
               }}
               onMouseEnter={(e) => {
                 (e.target as HTMLElement).style.color = "#0F4C81";
@@ -74,7 +98,9 @@ export default function Navbar() {
                 (e.target as HTMLElement).style.color = "#475569";
                 (e.target as HTMLElement).style.background = "transparent";
               }}
-            >{item.label}</Link>
+            >
+              {item.label}
+            </Link>
           </li>
         ))}
         <li>
@@ -119,12 +145,68 @@ export default function Navbar() {
         </li>
       </ul>
 
-      <style>{`
-        @media(max-width:900px){
-          nav { padding: 0 24px !important; }
-          .hidden-mobile { display: none !important; }
-        }
-      `}</style>
+      {/* Mobile dropdown menu */}
+      <ul className={`mobile-menu ${menuOpen ? "open" : ""}`}
+        style={{
+          display: "none",
+          flexDirection: "column",
+          gap: "8px",
+          padding: "1rem",
+          background: "#fff",
+          position: "absolute",
+          top: "72px",
+          left: 0,
+          right: 0,
+          boxShadow: "0 4px 12px rgba(0,0,0,.08)",
+          zIndex: 999,
+        }}>
+        {[
+          { label: "Home", href: "/" },
+          { label: "About", href: "/about" },
+          { label: "Divisions", href: "/#divisions" },
+          { label: "Services", href: "/#services" },
+          { label: "Careers", href: "/careers" },
+          { label: "Login", href: "/login" },
+          { label: "Get in Touch", href: "/contact" },
+        ].map((item) => (
+          <li key={item.label}>
+            <Link
+              href={item.href}
+              style={{
+                textDecoration: "none",
+                color: "#475569",
+                fontSize: "14px",
+                fontWeight: 500,
+                padding: "8px 14px",
+                borderRadius: "8px",
+                transition: "all .2s",
+                display: "block",
+              }}
+              onClick={() => setMenuOpen(false)}
+              onMouseEnter={(e) => {
+                (e.target as HTMLElement).style.color = "#0F4C81";
+                (e.target as HTMLElement).style.background = "#EFF6FF";
+              }}
+              onMouseLeave={(e) => {
+                (e.target as HTMLElement).style.color = "#475569";
+                (e.target as HTMLElement).style.background = "transparent";
+              }}
+            >
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+        <style>{`
+          @media (max-width: 900px) {
+            nav { padding: 0 24px !important; }
+            .desktop-nav { display: none !important; }
+            .hamburger-btn { display: block !important; }
+            .mobile-menu { display: none !important; }
+            .mobile-menu.open { display: flex !important; flex-direction: column; gap: 8px; }
+          }
+        `}</style>
     </nav>
   );
 }

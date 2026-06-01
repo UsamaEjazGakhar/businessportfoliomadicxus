@@ -82,24 +82,10 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           />
         )}
 
+
         {/* Sidebar */}
         <aside
-          style={{
-            background: "#0B1220",
-            width: "260px",
-            flexShrink: 0,
-            padding: "24px 0",
-            display: "flex",
-            flexDirection: "column",
-            overflowY: "auto",
-            position: "fixed",
-            top: 0,
-            bottom: 0,
-            left: 0,
-            zIndex: 1000,
-            transition: "left 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-          }}
-          className="admin-sidebar"
+          className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}
         >
           {/* Logo */}
           <div style={{ padding: "0 20px", marginBottom: "32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -298,9 +284,6 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           }
 
           @media (max-width: 900px) {
-            .admin-sidebar {
-              left: ${sidebarOpen ? "0" : "-260px"} !important;
-            }
             .sidebar-close-btn {
               display: block !important;
             }
