@@ -25,7 +25,7 @@ export default function FaqsAdmin() {
   const [sortOrder, setSortOrder] = useState(0);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-  const { showToast } = useToast();
+  const { showToast, confirmDelete } = useToast();
 
   useEffect(() => {
     fetchFaqs();
@@ -125,23 +125,28 @@ export default function FaqsAdmin() {
 
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      const res = await fetch(`/api/faqs/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast("FAQ deleted successfully.", "success");
-        fetchFaqs();
-      } else {
-        showToast(data.message || "Failed to delete FAQ", "error");
+  const handleDelete = (id: string) => {
+    confirmDelete(
+      "Are you sure you want to delete this FAQ?",
+      async () => {
+        try {
+          const res = await fetch(`/api/faqs/${id}`, {
+            method: "DELETE",
+            credentials: "include",
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast("FAQ deleted successfully.", "success");
+            fetchFaqs();
+          } else {
+            showToast(data.message || "Failed to delete FAQ", "error");
+          }
+        } catch (e) {
+          console.error(e);
+          showToast("Failed to delete FAQ", "error");
+        }
       }
-    } catch (e) {
-      console.error(e);
-      showToast("Failed to delete FAQ", "error");
-    }
+    );
   };
 
   return (

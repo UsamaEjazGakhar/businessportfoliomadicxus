@@ -33,7 +33,7 @@ export default function DivisionsAdmin() {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const { showToast } = useToast();
+  const { showToast, confirmDelete } = useToast();
 
   useEffect(() => {
     fetchDivisions();
@@ -84,6 +84,7 @@ export default function DivisionsAdmin() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setValidationErrors({});
     setSaving(true);
 
     const payload = { title, slug, description, icon, iconColor, sortOrder };
@@ -113,9 +114,10 @@ export default function DivisionsAdmin() {
             fieldErrors[field] = err.message;
           });
           setValidationErrors(fieldErrors);
+          setError("Validation failed. Please check the fields below.");
+        } else {
+          setError(data.message || "An error occurred while saving");
         }
-        const errMsg = data.message || (data.errors ? JSON.stringify(data.errors) : "An error occurred while saving");
-        setError(errMsg);
       }
     } catch {
       setError("Failed to save division");
@@ -124,20 +126,24 @@ export default function DivisionsAdmin() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this division? This will cascade-delete all associated projects.")) return;
-    try {
-      const res = await fetch(`/api/divisions/${id}`, { method: "DELETE", credentials: "include" });
-      const data = await res.json();
-      if (data.success) {
-        showToast(data.message || "Division deleted successfully", "success");
-        fetchDivisions();
-      } else {
-        showToast(data.message || "Failed to delete division", "error");
+  const handleDelete = (id: string) => {
+    confirmDelete(
+      "Are you sure you want to delete this division? This will cascade-delete all associated projects.",
+      async () => {
+        try {
+          const res = await fetch(`/api/divisions/${id}`, { method: "DELETE", credentials: "include" });
+          const data = await res.json();
+          if (data.success) {
+            showToast(data.message || "Division deleted successfully", "success");
+            fetchDivisions();
+          } else {
+            showToast(data.message || "Failed to delete division", "error");
+          }
+        } catch {
+          showToast("Failed to delete division", "error");
+        }
       }
-    } catch {
-      showToast("Failed to delete division", "error");
-    }
+    );
   };
 
   return (

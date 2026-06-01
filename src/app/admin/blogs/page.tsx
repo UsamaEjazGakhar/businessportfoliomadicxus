@@ -14,7 +14,7 @@ interface Blog {
 }
 
 export default function BlogsAdmin() {
-  const { showToast } = useToast();
+  const { showToast, confirmDelete } = useToast();
   const [blogs] = useState([
     {
       id: "1",
@@ -101,6 +101,16 @@ export default function BlogsAdmin() {
     setShowEditModal(false);
     setEditBlog(null);
     showToast("Blog status updated.", "success");
+  };
+
+  const handleDelete = (id: string) => {
+    confirmDelete(
+      "Are you sure you want to delete this blog post?",
+      () => {
+        setBlogList(prev => prev.filter(b => b.id !== id));
+        showToast("Blog post deleted successfully.", "success");
+      }
+    );
   };
 
   // Render create modal when needed
@@ -259,6 +269,10 @@ export default function BlogsAdmin() {
                     onClick={() => { setEditBlog({ ...blog }); setShowEditModal(true); }}
                     style={{ marginLeft: "8px", background: "none", border: "none", color: "#0F4C81", fontWeight: 600, cursor: "pointer", fontSize: "14px" }}
                   >Edit</button>
+                  <button
+                    onClick={() => handleDelete(blog.id)}
+                    style={{ marginLeft: "8px", background: "none", border: "none", color: "#EF4444", fontWeight: 600, cursor: "pointer", fontSize: "14px" }}
+                  >Delete</button>
                 </td>
               </tr>
             ))}

@@ -47,7 +47,7 @@ export default function ProjectsAdmin() {
   const [seoDescription, setSeoDescription] = useState("");
 const [error, setError] = useState("");
 
-  const { showToast } = useToast();
+  const { showToast, confirmDelete } = useToast();
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -198,23 +198,28 @@ const [error, setError] = useState("");
     }
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      const res = await fetch(`/api/projects/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast("Project deleted successfully.", "success");
-        fetchData();
-      } else {
-        showToast(data.message || "Failed to delete project", "error");
+  const handleDelete = (id: string) => {
+    confirmDelete(
+      "Are you sure you want to delete this project?",
+      async () => {
+        try {
+          const res = await fetch(`/api/projects/${id}`, {
+            method: "DELETE",
+            credentials: "include",
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast("Project deleted successfully.", "success");
+            fetchData();
+          } else {
+            showToast(data.message || "Failed to delete project", "error");
+          }
+        } catch (e) {
+          console.error(e);
+          showToast("Failed to delete project", "error");
+        }
       }
-    } catch (e) {
-      console.error(e);
-      showToast("Failed to delete project", "error");
-    }
+    );
   };
 
   return (

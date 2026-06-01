@@ -23,7 +23,7 @@ export default function TestimonialsAdmin() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
-const { showToast } = useToast();
+  const { showToast, confirmDelete } = useToast();
 
   // Form states
   const [authorName, setAuthorName] = useState("");
@@ -152,23 +152,28 @@ const { showToast } = useToast();
     }
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      const res = await fetch(`/api/testimonials/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast("Testimonial deleted successfully.", "success");
-        fetchTestimonials();
-      } else {
-        showToast(data.message || "Failed to delete testimonial", "error");
+  const handleDelete = (id: string) => {
+    confirmDelete(
+      "Are you sure you want to delete this testimonial?",
+      async () => {
+        try {
+          const res = await fetch(`/api/testimonials/${id}`, {
+            method: "DELETE",
+            credentials: "include",
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast("Testimonial deleted successfully.", "success");
+            fetchTestimonials();
+          } else {
+            showToast(data.message || "Failed to delete testimonial", "error");
+          }
+        } catch (e) {
+          console.error(e);
+          showToast("Failed to delete testimonial", "error");
+        }
       }
-    } catch (e) {
-      console.error(e);
-      showToast("Failed to delete testimonial", "error");
-    }
+    );
   };
 
   return (

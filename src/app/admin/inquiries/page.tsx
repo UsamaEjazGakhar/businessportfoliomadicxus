@@ -19,7 +19,7 @@ export default function InquiriesAdmin() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
-  const { showToast } = useToast();
+  const { showToast, confirmDelete } = useToast();
   const [notes, setNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
@@ -123,23 +123,28 @@ export default function InquiriesAdmin() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      const res = await fetch(`/api/inquiries/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast("Inquiry deleted successfully.", "success");
-        fetchInquiries();
-      } else {
-        showToast(data.message || "Failed to delete inquiry", "error");
+  const handleDelete = (id: string) => {
+    confirmDelete(
+      "Are you sure you want to delete this inquiry?",
+      async () => {
+        try {
+          const res = await fetch(`/api/inquiries/${id}`, {
+            method: "DELETE",
+            credentials: "include",
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast("Inquiry deleted successfully.", "success");
+            fetchInquiries();
+          } else {
+            showToast(data.message || "Failed to delete inquiry", "error");
+          }
+        } catch (e) {
+          console.error(e);
+          showToast("Failed to delete inquiry", "error");
+        }
       }
-    } catch (e) {
-      console.error(e);
-      showToast("Failed to delete inquiry", "error");
-    }
+    );
   };
 
   return (

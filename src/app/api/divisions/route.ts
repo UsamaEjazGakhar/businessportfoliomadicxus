@@ -5,11 +5,11 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { z } from "zod";
 
 const divisionSchema = z.object({
-  title: z.string().min(2).max(200),
-  slug: z.string().min(2).max(200),
-  description: z.string().min(10),
-  icon: z.string().min(1),
-  iconColor: z.string().min(1),
+  title: z.string().min(2, "Title must be at least 2 characters").max(200),
+  slug: z.string().min(2, "Slug must be at least 2 characters").max(200),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  icon: z.string().min(1, "Icon is required"),
+  iconColor: z.string().min(1, "Icon color is required"),
   sortOrder: z.number().int().optional(),
 });
 

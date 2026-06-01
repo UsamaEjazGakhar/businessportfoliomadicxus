@@ -28,6 +28,7 @@ interface Toast {
 
 interface ToastContextType {
   showToast: (message: string, type?: ToastType) => void;
+  confirmDelete: (message: string, onConfirm: () => void) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -46,6 +47,11 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
+  // Confirmation Modal State
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmMessage, setConfirmMessage] = useState("");
+  const [onConfirmCallback, setOnConfirmCallback] = useState<(() => void) | null>(null);
+
   // Toast trigger
   const showToast = useCallback((message: string, type: ToastType = "success") => {
     const id = Date.now();
@@ -55,13 +61,31 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     }, 4000);
   }, []);
 
+  // Confirm delete trigger
+  const confirmDelete = useCallback((message: string, onConfirm: () => void) => {
+    setConfirmMessage(message);
+    setOnConfirmCallback(() => onConfirm);
+    setConfirmOpen(true);
+  }, []);
+
+  const handleConfirm = () => {
+    if (onConfirmCallback) onConfirmCallback();
+    setConfirmOpen(false);
+    setOnConfirmCallback(null);
+  };
+
+  const handleCancel = () => {
+    setConfirmOpen(false);
+    setOnConfirmCallback(null);
+  };
+
   // Close sidebar on navigation change (mobile)
   useEffect(() => {
     setSidebarOpen(false);
   }, [pathname]);
 
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={{ showToast, confirmDelete }}>
       <div style={{ display: "flex", minHeight: "100vh", position: "relative" }}>
         
         {/* Mobile Backdrop */}
@@ -271,6 +295,130 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
             </div>
           ))}
         </div>
+
+        {/* Custom Confirmation Modal */}
+        {confirmOpen && (
+          <div
+            onClick={handleCancel}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "rgba(15, 23, 42, 0.3)",
+              backdropFilter: "blur(4px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 99999,
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: "#fff",
+                borderRadius: "16px",
+                width: "440px",
+                padding: "28px",
+                boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                textAlign: "center",
+              }}
+            >
+              {/* Warning Icon */}
+              <div
+                style={{
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "50%",
+                  background: "#FEF2F2",
+                  border: "1.5px solid #FEE2E2",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#EF4444",
+                  fontSize: "24px",
+                  marginBottom: "16px",
+                }}
+              >
+                ⚠️
+              </div>
+
+              {/* Title */}
+              <h3
+                style={{
+                  fontSize: "18px",
+                  fontWeight: 800,
+                  color: "#0F172A",
+                  marginBottom: "8px",
+                }}
+              >
+                Confirm Deletion
+              </h3>
+
+              {/* Message */}
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "#64748B",
+                  lineHeight: "1.5",
+                  marginBottom: "24px",
+                }}
+              >
+                {confirmMessage}
+              </p>
+
+              {/* Actions */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: "12px",
+                  width: "100%",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  style={{
+                    flex: 1,
+                    background: "#F1F5F9",
+                    color: "#475569",
+                    border: "none",
+                    borderRadius: "10px",
+                    padding: "10px 20px",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "background 0.2s",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirm}
+                  style={{
+                    flex: 1,
+                    background: "#EF4444",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "10px",
+                    padding: "10px 20px",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "background 0.2s",
+                  }}
+                >
+                  Yes, Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* CSS rules for screen widths */}
         <style>{`
