@@ -10,6 +10,13 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
     maxAge: 8 * 60 * 60, // 8 hours
+    // In production, ensure cookies are secure and SameSite=None for cross‑origin login flows
+    ...(process.env.NODE_ENV === "production" && {
+      cookie: {
+        secure: true,
+        sameSite: "none",
+      },
+    }),
   },
   providers: [
     CredentialsProvider({
@@ -19,32 +26,39 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.username || !credentials?.password) {
-          throw new Error("Credentials required");
+        try {
+          if (!credentials?.username || !credentials?.password) {
+            throw new Error("Credentials required");
+          }
+
+          const user = await prisma.user.findUnique({
+            where: { username: credentials.username },
+          });
+
+          if (!user) {
+            // Returning null signals authentication failure without throwing
+            return null;
+          }
+
+          const isValid = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
+          if (!isValid) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          };
+        } catch (error) {
+          // Log error for debugging in production logs
+          console.error("Auth authorize error:", error);
+          return null;
         }
-
-        const user = await prisma.user.findUnique({
-          where: { username: credentials.username },
-        });
-
-        if (!user) {
-          throw new Error("Account not found");
-        }
-
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
-        if (!isValid) {
-          throw new Error("Invalid access password");
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
       },
     }),
   ],
