@@ -3,9 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
-// Urgent Fix: Hardcoding NEXTAUTH_URL and NEXTAUTH_SECRET directly in code
-process.env.NEXTAUTH_URL = process.env.NEXTAUTH_URL || "https://businessportfoliomadicxus-2pfm.vercel.app";
-
 export const authOptions: NextAuthOptions = {
   // Ensures NextAuth can sign/verify JWTs consistently.
   // For production, set NEXTAUTH_SECRET in environment variables.
