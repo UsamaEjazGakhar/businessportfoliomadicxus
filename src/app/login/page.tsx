@@ -1,7 +1,7 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -20,6 +20,15 @@ export default function LoginPage() {
   const [signupLoading, setSignupLoading] = useState(false);
   const [signupError, setSignupError] = useState("");
 
+  // Clear any lingering NextAuth error params in the URL
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('error') || url.searchParams.has('callbackUrl')) {
+      // Remove query parameters and stay on the login page
+      router.replace('/');
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -29,16 +38,15 @@ export default function LoginPage() {
       username,
       password,
       redirect: false,
-      callbackUrl: "/admin",
     });
 
     if (result?.error) {
-      setError(result.error);
-      setLoading(false);
+      const message = result.error === "CredentialsSignin" ? "Invalid username or password" : result.error;
+      setError(message);
     } else {
-      // NextAuth will provide the URL to redirect to
-      window.location.href = result?.url || "/admin";
+      router.push("/admin");
     }
+    setLoading(false);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
