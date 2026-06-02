@@ -46,6 +46,11 @@
         </div>
 
         {/* Heading */}
+        <div className="animate-fade-up" style={{
+          fontSize: "clamp(20px,2.5vw,32px)", fontWeight: 800, color: "#14B8A6", letterSpacing: "8px", marginBottom: "16px", textTransform: "uppercase"
+        }}>
+          MADIXCUS GROUP
+        </div>
         <h1 className="animate-fade-up" style={{
           fontSize: "clamp(42px,5.2vw,72px)", fontWeight: 900,
           lineHeight: 1.06, color: "#fff", letterSpacing: "-2.5px", marginBottom: "26px",
