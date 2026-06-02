@@ -25,20 +25,19 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    // NextAuth signin redirect ko callbackUrl decide karta hai (login?callbackUrl=/ pass hota hai middleware se)
-    // Hum yahan callbackUrl hardcode nahi karenge.
     const result = await signIn("credentials", {
       username,
       password,
       redirect: false,
+      callbackUrl: "/admin",
     });
 
     if (result?.error) {
       setError(result.error);
       setLoading(false);
     } else {
-      // Go to admin directly after successful login
-      router.push("/admin");
+      // NextAuth will provide the URL to redirect to
+      window.location.href = result?.url || "/admin";
     }
   };
 

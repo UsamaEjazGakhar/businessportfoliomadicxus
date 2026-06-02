@@ -3,6 +3,13 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
+// Ensure NEXTAUTH_URL is set for Vercel deployments
+if (!process.env.NEXTAUTH_URL) {
+  if (process.env.VERCEL_URL) {
+    process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   // Ensures NextAuth can sign/verify JWTs consistently.
   // For production, set NEXTAUTH_SECRET in environment variables.
