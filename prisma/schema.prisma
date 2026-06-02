@@ -133,3 +133,19 @@ model AuditLog {
   @@index([userId])
   @@map("audit_logs")
 }
+
+model BlogPost {
+  id          String    @id @default(uuid())
+  title       String
+  slug        String    @unique
+  author      String
+  category    String
+  content     String    @db.Text
+  status      String    @default("Draft")
+  publishedAt DateTime?
+  readTime    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("blog_posts")
+}

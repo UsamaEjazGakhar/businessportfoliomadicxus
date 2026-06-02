@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prebuild": "rimraf .next",
     "dev": "next dev --turbopack",
-    "build": "rimraf .next && prisma migrate deploy && next build",
+    "build": "prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
