@@ -4,18 +4,12 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
 // Ensure NEXTAUTH_URL is set for Vercel deployments
-if (!process.env.NEXTAUTH_URL) {
-  if (process.env.VERCEL_URL) {
-    process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
-  } else {
-    // Fallback to the custom production domain
-    process.env.NEXTAUTH_URL = "https://businessportfoliomadicxus-2pfm.vercel.app";
-  }
-}
+// NEXTAUTH_URL will be supplied via Vercel environment variables.
+// No hard‑coded fallback is needed.
 
 export const authOptions: NextAuthOptions = {
   // Secret for JWT signing
-  secret: process.env.NEXTAUTH_SECRET || "d8f4a1c9e7b23f6a4d8c1e5f9b7a2c4d6e8f1a3b5c7d9e2f4a6b8c1d3e5f7a9",
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
     maxAge: 8 * 60 * 60, // 8 hours
