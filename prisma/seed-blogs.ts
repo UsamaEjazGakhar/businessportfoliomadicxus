@@ -42,11 +42,11 @@ async function main() {
   ];
 
   for (const blog of blogs) {
-    const existing = await prisma.blogPost.findUnique({
+    const existing = await (prisma as any).blogPost.findUnique({
       where: { slug: blog.slug },
     });
     if (!existing) {
-      await prisma.blogPost.create({ data: blog });
+      await (prisma as any).blogPost.create({ data: blog });
       console.log(`  ✅ Created: ${blog.title}`);
     } else {
       console.log(`  ⏭️  Skipped (already exists): ${blog.title}`);
