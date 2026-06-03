@@ -22,7 +22,7 @@ export async function PUT(
     const body = await req.json();
     const validatedData = blogUpdateSchema.parse(body);
 
-    const updated = await prisma.blogPost.update({
+    const updated = await (prisma as any).blogPost.update({
       where: { id },
       data: {
         status: validatedData.status,
@@ -52,7 +52,7 @@ export async function DELETE(
 
     const { id } = await params;
 
-    await prisma.blogPost.delete({
+    await (prisma as any).blogPost.delete({
       where: { id },
     });
 
