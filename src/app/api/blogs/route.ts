@@ -13,7 +13,7 @@ const blogSchema = z.object({
 
 export async function GET() {
   try {
-    const blogs = await prisma.blogPost.findMany({
+    const blogs = await (prisma as any).blogPost.findMany({
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json({ success: true, data: blogs }, { status: 200 });
@@ -46,12 +46,12 @@ export async function POST(req: NextRequest) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
 
-    const existing = await prisma.blogPost.findUnique({ where: { slug } });
+    const existing = await (prisma as any).blogPost.findUnique({ where: { slug } });
     if (existing) {
       slug = `${slug}-${Date.now().toString().slice(-4)}`;
     }
 
-    const blog = await prisma.blogPost.create({
+    const blog = await (prisma as any).blogPost.create({
       data: {
         title: validatedData.title,
         slug,
