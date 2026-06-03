@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Outfit, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/lib/query-provider";
+export const dynamic = "force-dynamic";
+
+
 
 const outfit = Outfit({
   subsets: ["latin"],

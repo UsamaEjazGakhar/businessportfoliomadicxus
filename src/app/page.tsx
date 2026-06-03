@@ -1,4 +1,5 @@
-import Navbar from "@/components/main/navbar";
+export const revalidate = 0;
+
 import Hero from "@/components/main/hero";
 import Stats from "@/components/main/stats";
 import Divisions from "@/components/main/divisions";

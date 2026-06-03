@@ -7,6 +7,9 @@ import bcrypt from "bcryptjs";
 if (!process.env.NEXTAUTH_URL) {
   if (process.env.VERCEL_URL) {
     process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
+  } else {
+    // Fallback to the custom production domain
+    process.env.NEXTAUTH_URL = "https://businessportfoliomadicxus-2pfm.vercel.app";
   }
 }
 
