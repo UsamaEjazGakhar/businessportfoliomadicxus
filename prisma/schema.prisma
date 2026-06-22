@@ -150,3 +150,249 @@ model BlogPost {
 
   @@map("blog_posts")
 }
+
+// Admission Form Template Model
+model AdmissionFormTemplate {
+  id                          String                   @id @default(uuid())
+  instituteName               String                   @default("Care Institute of Health Sciences")
+  instituteAddress            String                   @default("Plot 71-C, Satellite Town, Block-A, Rawalpindi")
+  instituteContact            String                   @default("0333-1165573")
+  createdAt                   DateTime                 @default(now())
+  updatedAt                   DateTime                 @updatedAt
+
+  @@map("admission_form_templates")
+}
+
+// Admission Form Submission Model
+model AdmissionFormSubmission {
+  id                          String                   @id @default(uuid())
+  instituteName               String
+  instituteAddress            String
+  instituteContact            String
+  
+  // Personal Information
+  applicantName               String?
+  fatherName                  String?
+  dateOfBirth                 String?
+  cnicBFormNumber             String?
+  domicileDistrict            String?
+  permanentAddress            String?
+  postalAddress               String?
+  mobileNumber                String?
+  photoUrl                    String?  @db.Text
+
+  // Qualification
+  qualifications              QualificationSubmission[]
+
+  // Signatures
+  applicantSignatureUrl       String?  @db.Text
+  guardianSignatureUrl        String?  @db.Text
+
+  // Office Use
+  admissionGranted            Boolean?
+  admissionDenied             Boolean?
+  isRead                      Boolean                   @default(false)
+  assignedNotes               String?                   @db.Text
+
+  createdAt                   DateTime                 @default(now())
+  updatedAt                   DateTime                 @updatedAt
+
+  @@map("admission_form_submissions")
+}
+
+model QualificationSubmission {
+  id                          String                   @id @default(uuid())
+  admissionFormSubmissionId   String
+  admissionFormSubmission     AdmissionFormSubmission  @relation(fields: [admissionFormSubmissionId], references: [id], onDelete: Cascade)
+  degreeProgram               String
+  scienceOrArts               String?
+  totalMarks                  String?
+  marksObtained               String?
+  percentage                  String?
+  // Science Subject Marks
+  physicsMarks                String?
+  chemistryMarks              String?
+  biologyMarks                String?
+  scienceTotal                String?
+  sciencePercentage           String?
+
+  createdAt                   DateTime                 @default(now())
+
+  @@map("qualification_submissions")
+}
+
+// Fee Structure Template Models
+model NursingFeeStructureTemplate {
+  id                          String                   @id @default(uuid())
+  part1AdmissionFee           String                   @default("75000.00")
+  part1MonthlyFee             String                   @default("10000.00")
+  part1TotalFee               String                   @default("195000.00")
+  part2MonthlyFee             String                   @default("10000.00")
+  part2TotalFee               String                   @default("120000.00")
+  note                        String                   @default("All Fee are \"Non Refundable\"")
+  examFeeNote                 String                   @default("Examination Fee will be paid according to Nursing Council of Pakistan")
+  admissionCriteria           String                   @default("Matric with Science\n45% lverall")
+  ageLimit                    String                   @default("35 years")
+  scholarship                 String                   @default("First 10 students will get 10% discount on Admission")
+  createdAt                   DateTime                 @default(now())
+  updatedAt                   DateTime                 @updatedAt
+
+  @@map("nursing_fee_structure_templates")
+}
+
+model ParamedicalFeeStructureLabTemplate {
+  id                          String                   @id @default(uuid())
+  part1AdmissionFee           String                   @default("30000.00")
+  part1MonthlyFee             String                   @default("5000.00")
+  part1TotalFee               String                   @default("90000.00")
+  part2MonthlyFee             String                   @default("5000.00")
+  part2TotalFee               String                   @default("60000.00")
+  note                        String                   @default("All Fee are \"Non Refundable\"")
+  examFeeNote                 String                   @default("Examination Fee will be paid according\nto (Punjab Medical Faculty) / Federal\nBoard")
+  admissionCriteria           String                   @default("Matric with Science & Computer Science\n40% lverall")
+  ageLimit                    String                   @default("No Age Limit")
+  scholarship                 String                   @default("First 10 students will get 10% discount on Admission")
+  createdAt                   DateTime                 @default(now())
+  updatedAt                   DateTime                 @updatedAt
+
+  @@map("paramedical_fee_structure_lab_templates")
+}
+
+model ParamedicalFeeStructureMLTTemplate {
+  id                          String                   @id @default(uuid())
+  part1AdmissionFee           String                   @default("30000.00")
+  part1MonthlyFee             String                   @default("5000.00")
+  part1TotalFee               String                   @default("90000.00")
+  part2MonthlyFee             String                   @default("5000.00")
+  part2TotalFee               String                   @default("60000.00")
+  note                        String                   @default("All Fee are \"Non Refundable\"")
+  examFeeNote                 String                   @default("Examination Fee will be paid according\nto (Punjab Medical Faculty) / Federal\nBoard")
+  admissionCriteria           String                   @default("Matric with Science & Computer Science\n40% iverall")
+  ageLimit                    String                   @default("No Age Limit")
+  scholarship                 String                   @default("First 10 students will get 10% discount on Admission")
+  createdAt                   DateTime                 @default(now())
+  updatedAt                   DateTime                 @updatedAt
+
+  @@map("paramedical_fee_structure_mlt_templates")
+}
+
+// Prescription Template Model
+model PrescriptionTemplate {
+  id                          String                   @id @default(uuid())
+  doctorName                  String                   @default("Dr. Kazim Raza")
+  doctorQualifications        String                   @default("MBBS, &MP")
+  pmdcRegNumber               String                   @default("798414-01-M")
+  uidAmb                      String                   @default("UID/AMB 2026")
+  timings                     String                   @default("05:00 pm to 09:00 pm")
+  createdAt                   DateTime                 @default(now())
+  updatedAt                   DateTime                 @updatedAt
+
+  @@map("prescription_templates")
+}
+
+// Prescription Submission Model
+model PrescriptionSubmission {
+  id                          String                   @id @default(uuid())
+  doctorName                  String
+  doctorQualifications        String
+  pmdcRegNumber               String
+  uidAmb                      String
+  timings                     String
+  
+  // Patient details
+  patientName                 String?
+  patientAge                  String?
+  patientGender               String?
+  date                        String?
+  
+  // Rx & Advice
+  rxContent                   String?  @db.Text
+  adviceContent               String?  @db.Text
+  
+  isRead                      Boolean                   @default(false)
+  assignedNotes               String?                   @db.Text
+
+  createdAt                   DateTime                 @default(now())
+  updatedAt                   DateTime                 @updatedAt
+
+  @@map("prescription_submissions")
+}
+
+// Fee Structure Submission Models
+model NursingFeeStructureSubmission {
+  id                          String                   @id @default(uuid())
+  part1AdmissionFee           String
+  part1MonthlyFee             String
+  part1TotalFee               String
+  part2MonthlyFee             String
+  part2TotalFee               String
+  note                        String
+  examFeeNote                 String
+  admissionCriteria           String
+  ageLimit                    String
+  scholarship                 String
+  
+  // User details
+  applicantName               String?
+  applicantContact            String?
+  
+  isRead                      Boolean                   @default(false)
+  assignedNotes               String?                   @db.Text
+
+  createdAt                   DateTime                 @default(now())
+  updatedAt                   DateTime                 @updatedAt
+
+  @@map("nursing_fee_structure_submissions")
+}
+
+model ParamedicalFeeStructureLabSubmission {
+  id                          String                   @id @default(uuid())
+  part1AdmissionFee           String
+  part1MonthlyFee             String
+  part1TotalFee               String
+  part2MonthlyFee             String
+  part2TotalFee               String
+  note                        String
+  examFeeNote                 String
+  admissionCriteria           String
+  ageLimit                    String
+  scholarship                 String
+  
+  // User details
+  applicantName               String?
+  applicantContact            String?
+  
+  isRead                      Boolean                   @default(false)
+  assignedNotes               String?                   @db.Text
+
+  createdAt                   DateTime                 @default(now())
+  updatedAt                   DateTime                 @updatedAt
+
+  @@map("paramedical_fee_structure_lab_submissions")
+}
+
+model ParamedicalFeeStructureMLTSubmission {
+  id                          String                   @id @default(uuid())
+  part1AdmissionFee           String
+  part1MonthlyFee             String
+  part1TotalFee               String
+  part2MonthlyFee             String
+  part2TotalFee               String
+  note                        String
+  examFeeNote                 String
+  admissionCriteria           String
+  ageLimit                    String
+  scholarship                 String
+  
+  // User details
+  applicantName               String?
+  applicantContact            String?
+  
+  isRead                      Boolean                   @default(false)
+  assignedNotes               String?                   @db.Text
+
+  createdAt                   DateTime                 @default(now())
+  updatedAt                   DateTime                 @updatedAt
+
+  @@map("paramedical_fee_structure_mlt_submissions")
+}

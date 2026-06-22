@@ -44,7 +44,7 @@ const divisionsData = [
   },
 ];
 
-export default async function Divisions() {
+export default function Divisions() {
   const categoryLabels: Record<string, string> = {
     "icon-blue": "Education",
     "icon-teal": "Healthcare",

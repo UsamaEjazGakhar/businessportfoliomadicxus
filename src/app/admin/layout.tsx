@@ -15,6 +15,11 @@ const NAV_ITEMS = [
   { icon: "🌟", label: "Testimonials", href: "/admin/testimonials" },
   { icon: "❓", label: "FAQs Manager", href: "/admin/faqs" },
   { icon: "📨", label: "Contact Leads", href: "/admin/inquiries" },
+  { icon: "📄", label: "Admission Forms", href: "/admin/admission-forms" },
+  { icon: "📝", label: "Prescriptions", href: "/admin/prescriptions" },
+  { icon: "💰", label: "Nursing Fees", href: "/admin/nursing-fee-structures" },
+  { icon: "🔬", label: "Paramedical Lab Fees", href: "/admin/paramedical-fee-structure-lab" },
+  { icon: "🧪", label: "Paramedical MLT Fees", href: "/admin/paramedical-fee-structure-mlt" },
   { icon: "⚙️", label: "Settings", href: "/admin/settings" },
 ];
 
@@ -45,6 +50,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   // Confirmation Modal State
@@ -109,10 +115,10 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
 
         {/* Sidebar */}
         <aside
-          className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}
+          className={`admin-sidebar ${sidebarOpen ? 'open' : ''} ${sidebarCollapsed ? 'collapsed' : ''}`}
         >
           {/* Logo */}
-          <div style={{ padding: "0 20px", marginBottom: "32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ padding: "0 16px", marginBottom: "32px", display: "flex", justifyContent: sidebarCollapsed ? "center" : "space-between", alignItems: "center" }}>
             <Link href="/admin" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
               <div style={{
                 width: "36px", height: "36px",
@@ -120,15 +126,18 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
                 borderRadius: "9px",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 color: "#fff", fontWeight: 900, fontSize: "16px", fontStyle: "italic",
+                flexShrink: 0,
               }}>M</div>
-              <div>
-                <div style={{ fontSize: "16px", fontWeight: 800, color: "#fff" }}>
-                  Medic<span style={{ color: "#14B8A6" }}>xus</span>
+              {!sidebarCollapsed && (
+                <div>
+                  <div style={{ fontSize: "16px", fontWeight: 800, color: "#fff" }}>
+                    Medic<span style={{ color: "#14B8A6" }}>xus</span>
+                  </div>
+                  <div style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "1.5px", color: "#94A3B8", textTransform: "uppercase" }}>
+                    Admin Panel
+                  </div>
                 </div>
-                <div style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "1.5px", color: "#94A3B8", textTransform: "uppercase" }}>
-                  Admin Panel
-                </div>
-              </div>
+              )}
             </Link>
 
             {/* Mobile close button */}
@@ -149,33 +158,64 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Nav Items */}
-          <nav style={{ flex: 1, padding: "0 12px" }}>
+          <nav style={{ flex: 1, padding: sidebarCollapsed ? "0 8px" : "0 12px" }}>
             {NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href;
               return (
-                <Link key={item.href} href={item.href} style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  padding: "10px 14px",
-                  borderRadius: "10px",
-                  marginBottom: "4px",
-                  textDecoration: "none",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  color: isActive ? "#fff" : "rgba(255,255,255,.5)",
-                  background: isActive ? "rgba(20,184,166,.15)" : "transparent",
-                  transition: "all .2s",
-                }}>
-                  <span style={{ fontSize: "16px" }}>{item.icon}</span>
-                  {item.label}
+                <Link 
+                  key={item.href} 
+                  href={item.href} 
+                  title={sidebarCollapsed ? item.label : undefined}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: sidebarCollapsed ? "center" : "flex-start",
+                    gap: "12px",
+                    padding: sidebarCollapsed ? "12px" : "10px 14px",
+                    borderRadius: "10px",
+                    marginBottom: "4px",
+                    textDecoration: "none",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    color: isActive ? "#fff" : "rgba(255,255,255,.5)",
+                    background: isActive ? "rgba(20,184,166,.15)" : "transparent",
+                    transition: "all .2s",
+                  }}
+                >
+                  <span style={{ fontSize: "18px" }}>{item.icon}</span>
+                  {!sidebarCollapsed && item.label}
                 </Link>
               );
             })}
           </nav>
 
+          {/* Collapse/Expand Toggle */}
+          <div style={{ padding: sidebarCollapsed ? "0 12px" : "0 16px", marginBottom: "12px" }}>
+            <button
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                background: "rgba(255, 255, 255, 0.05)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                borderRadius: "8px",
+                color: "rgba(255,255,255,.6)",
+                fontSize: "14px",
+                cursor: "pointer",
+                transition: "all .2s",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+              }}
+            >
+              {sidebarCollapsed ? "→" : "←"}
+              {!sidebarCollapsed && <span>Collapse</span>}
+            </button>
+          </div>
+
           {/* User Info */}
-          {session?.user && (
+          {session?.user && !sidebarCollapsed && (
             <div style={{ padding: "16px 20px", borderTop: "1px solid rgba(255,255,255,.08)" }}>
               <div style={{ fontSize: "13px", fontWeight: 600, color: "#fff", marginBottom: "4px" }}>
                 {session.user.name}
@@ -211,7 +251,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
             flexDirection: "column",
             transition: "margin-left 0.3s ease",
           }}
-          className="admin-main"
+          className={`admin-main ${sidebarCollapsed ? 'collapsed' : ''}`}
         >
           {/* Top Header */}
           <header style={{

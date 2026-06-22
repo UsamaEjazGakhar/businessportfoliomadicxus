@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  distDir: process.env.VERCEL ? undefined : "build",
   output: "standalone",
   images: {
     remotePatterns: [
