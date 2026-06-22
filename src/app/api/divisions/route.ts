@@ -11,6 +11,7 @@ const divisionSchema = z.object({
   icon: z.string().min(1, "Icon is required"),
   iconColor: z.string().min(1, "Icon color is required"),
   sortOrder: z.number().int().optional(),
+  targetUrl: z.string().optional().nullable(),
 });
 
 export async function GET() {
@@ -43,6 +44,7 @@ export async function POST(req: NextRequest) {
       data: {
         ...validatedData,
         sortOrder: validatedData.sortOrder ?? 0,
+        targetUrl: validatedData.targetUrl || null,
       },
     });
 

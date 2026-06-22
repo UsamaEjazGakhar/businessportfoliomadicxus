@@ -1,11 +1,50 @@
-import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
-export default async function Divisions() {
-  const divisions = await prisma.businessDivision.findMany({
-    orderBy: { sortOrder: "asc" },
-  });
+// Hardcoded divisions data to ensure all 4 are present
+const divisionsData = [
+  {
+    id: "1",
+    title: "Enterprise Lab Management System",
+    slug: "serve-institute-of-health-sciences",
+    description: "Software for managing labs covering all important aspects.",
+    icon: "🎓",
+    iconColor: "icon-blue",
+    sortOrder: 1,
+    targetUrl: null,
+  },
+  {
+    id: "2",
+    title: "Medicxus Diagnostic",
+    slug: "medicxus-diagnostic",
+    description: "Advanced diagnostic services combining precision technology with compassionate patient care for accurate and timely results.",
+    icon: "🏥",
+    iconColor: "icon-teal",
+    sortOrder: 2,
+    targetUrl: null,
+  },
+  {
+    id: "3",
+    title: "Study Abroad Next Project",
+    slug: "study-abroad-next-project",
+    description: "Guiding studets to the world's finest medical universities with end-to-end admission and visa support for BDS, MBBS, and PHD programs.",
+    icon: "🌍",
+    iconColor: "icon-amber",
+    sortOrder: 3,
+    targetUrl: "https://study-abroad-wg4o.vercel.app/",
+  },
+  {
+    id: "4",
+    title: "Enterprise Hospital Management System",
+    slug: "hospital-management-system-phc",
+    description: "Enterprise Level SAAS-based hospital management system designed specifically for PHC (Primary Health Center) format, streamlining operations for healthcare facilities.",
+    icon: "💻",
+    iconColor: "icon-purple",
+    sortOrder: 4,
+    targetUrl: "https://lightcoral-chimpanzee-457948.hostingersite.com/frontend/login.php",
+  },
+];
 
+export default async function Divisions() {
   const categoryLabels: Record<string, string> = {
     "icon-blue": "Education",
     "icon-teal": "Healthcare",
@@ -46,7 +85,7 @@ export default async function Divisions() {
         gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))",
         gap: "24px",
       }}>
-        {divisions.map((division: { id: string; title: string; description: string; icon: string; iconColor: string; slug: string }) => (
+        {divisionsData.map((division) => (
           <DivisionCard key={division.id} division={division} categoryLabel={categoryLabels[division.iconColor] || ""} />
         ))}
       </div>
@@ -72,17 +111,22 @@ export default async function Divisions() {
 }
 
 function DivisionCard({ division, categoryLabel }: {
-  division: { id: string; title: string; description: string; icon: string; iconColor: string; slug: string };
+  division: { id: string; title: string; description: string; icon: string; iconColor: string; slug: string; targetUrl: string | null };
   categoryLabel: string;
 }) {
+  const Wrapper = division.targetUrl ? "a" : Link;
+  const href = division.targetUrl ? division.targetUrl : `/api/redirect-division/${division.id}`;
+  const extraProps = division.targetUrl ? { target: "_blank", rel: "noopener noreferrer" } : {};
+
   return (
-    <Link href={`/api/redirect-division/${division.id}`}
+    <Wrapper href={href}
       style={{
         background: "#fff", border: "1px solid #E2E8F0", borderRadius: "18px",
         padding: "34px", transition: "all .25s", cursor: "pointer",
         position: "relative", overflow: "hidden", display: "block", textDecoration: "none",
       }}
       className="card-hover-border"
+      {...extraProps}
     >
       <div className={division.iconColor} style={{
         width: "56px", height: "56px", borderRadius: "14px",
@@ -104,6 +148,6 @@ function DivisionCard({ division, categoryLabel }: {
         fontSize: "13px", fontWeight: 600, color: "#0F4C81",
         textDecoration: "none", marginTop: "18px", transition: "gap .2s",
       }}>Learn More →</span>
-    </Link>
+    </Wrapper>
   );
 }

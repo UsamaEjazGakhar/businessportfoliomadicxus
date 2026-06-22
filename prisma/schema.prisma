@@ -42,6 +42,7 @@ model BusinessDivision {
   icon        String    // Emojis/Unicode references (e.g., '🎓', '🏥')
   iconColor   String    // Mapped variable (e.g., 'icon-blue', 'icon-teal')
   sortOrder   Int       @default(0)
+  targetUrl   String?   @db.VarChar(512) // Destination website address for redirect
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   projects    Project[]

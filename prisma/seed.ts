@@ -57,23 +57,25 @@ async function main() {
 
   const devConsultancy = await prisma.businessDivision.create({
     data: {
-      title: "Study Abroad MBBS Project",
+      title: "Study Abroad Next Project",
       slug: "study-abroad-mbbs",
       description: "Guiding aspiring doctors to the world's finest medical universities with end-to-end admission and visa support.",
       icon: "🌍",
       iconColor: "icon-amber",
       sortOrder: 3,
+      targetUrl: "https://study-abroad-wg4o.vercel.app/",
     },
   });
 
   const devITServices = await prisma.businessDivision.create({
     data: {
-      title: "Healthcare IT Solutions",
+      title: "Hospital Management System",
       slug: "healthcare-it-solutions",
       description: "Hospital management, lab software, web development, and digital marketing — purpose-built for healthcare operations.",
       icon: "💻",
       iconColor: "icon-purple",
       sortOrder: 4,
+      targetUrl: "https://lightcoral-chimpanzee-457948.hostingersite.com/frontend/login.php",
     },
   });
   console.log("✅ Seeded business divisions successfully.");

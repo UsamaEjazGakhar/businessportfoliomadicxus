@@ -14,6 +14,7 @@ interface Division {
   icon: string;
   iconColor: string;
   sortOrder: number;
+  targetUrl: string | null;
   _count?: { projects: number };
 }
 
@@ -30,6 +31,7 @@ export default function DivisionsAdmin() {
   const [icon, setIcon] = useState("🎓");
   const [iconColor, setIconColor] = useState("icon-blue");
   const [sortOrder, setSortOrder] = useState(0);
+  const [targetUrl, setTargetUrl] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -64,6 +66,7 @@ export default function DivisionsAdmin() {
     setIcon("🎓");
     setIconColor("icon-blue");
     setSortOrder(0);
+    setTargetUrl("");
     setError("");
     setValidationErrors({});
     setModalOpen(true);
@@ -77,6 +80,7 @@ export default function DivisionsAdmin() {
     setIcon(div.icon);
     setIconColor(div.iconColor);
     setSortOrder(div.sortOrder);
+    setTargetUrl(div.targetUrl || "");
     setError("");
     setValidationErrors({});
     setModalOpen(true);
@@ -330,12 +334,23 @@ export default function DivisionsAdmin() {
                 </div>
               </div>
 
-              <div style={{ marginBottom: "24px" }}>
+              <div style={{ marginBottom: "16px" }}>
                 <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>Sort Order</label>
                 <input
                   type="number"
                   value={sortOrder}
                   onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
+                  style={{ width: "100%", padding: "10px", border: "1px solid #E2E8F0", borderRadius: "8px" }}
+                />
+              </div>
+
+              <div style={{ marginBottom: "24px" }}>
+                <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#475569", marginBottom: "6px" }}>Target URL (Optional - for external links)</label>
+                <input
+                  type="url"
+                  value={targetUrl}
+                  onChange={(e) => setTargetUrl(e.target.value)}
+                  placeholder="https://example.com"
                   style={{ width: "100%", padding: "10px", border: "1px solid #E2E8F0", borderRadius: "8px" }}
                 />
               </div>

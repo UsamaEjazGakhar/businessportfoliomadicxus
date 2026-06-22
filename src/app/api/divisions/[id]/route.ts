@@ -11,6 +11,7 @@ const divisionUpdateSchema = z.object({
   icon: z.string().min(1, "Icon is required"),
   iconColor: z.string().min(1, "Icon color is required"),
   sortOrder: z.number().int().optional(),
+  targetUrl: z.string().optional().nullable(),
 });
 
 export async function PUT(
@@ -29,7 +30,10 @@ export async function PUT(
 
     const updated = await prisma.businessDivision.update({
       where: { id },
-      data: validatedData,
+      data: {
+        ...validatedData,
+        targetUrl: validatedData.targetUrl ?? null
+      },
     });
 
     return NextResponse.json({ success: true, data: updated }, { status: 200 });
