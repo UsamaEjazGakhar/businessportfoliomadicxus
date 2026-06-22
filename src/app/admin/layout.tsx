@@ -115,9 +115,21 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
         {/* Sidebar */}
         <aside
           className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}
+          style={{
+            width: "260px",
+            position: "fixed",
+            top: 0,
+            left: 0,
+            height: "100vh",
+            background: "linear-gradient(180deg, #0F172A 0%, #0B1220 100%)",
+            borderRight: "1px solid rgba(255,255,255,.05)",
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "auto", // Make sidebar scrollable
+          }}
         >
           {/* Logo */}
-          <div style={{ padding: "0 20px", marginBottom: "32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ padding: "20px 20px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
             <Link href="/admin" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
               <div style={{
                 width: "36px", height: "36px",
@@ -154,7 +166,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Nav Items */}
-          <nav style={{ flex: 1, padding: "0 12px" }}>
+          <nav style={{ flex: 1, padding: "0 12px", overflowY: "auto" }}>
             {NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -181,7 +193,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
 
           {/* User Info */}
           {session?.user && (
-            <div style={{ padding: "16px 20px", borderTop: "1px solid rgba(255,255,255,.08)" }}>
+            <div style={{ padding: "16px 20px", borderTop: "1px solid rgba(255,255,255,.08)", flexShrink: 0, marginTop: "auto" }}>
               <div style={{ fontSize: "13px", fontWeight: 600, color: "#fff", marginBottom: "4px" }}>
                 {session.user.name}
               </div>
@@ -195,8 +207,18 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
               </div>
               <button
                 onClick={() => signOut({ callbackUrl: "/login" })}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(239, 68, 68, 0.2)";
+                  e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.4)";
+                  e.currentTarget.style.color = "#fca5a5";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,.06)";
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,.1)";
+                  e.currentTarget.style.color = "rgba(255,255,255,.5)";
+                }}
                 style={{
-                  display: "block", width: "100%", padding: "8px",
+                  display: "block", width: "100%", padding: "10px",
                   background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.1)",
                   borderRadius: "8px", color: "rgba(255,255,255,.5)", fontSize: "13px",
                   cursor: "pointer", transition: "all .2s",
@@ -425,32 +447,7 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
           </div>
         )}
 
-        {/* CSS rules for screen widths */}
-        <style>{`
-          @keyframes toastSlideIn {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-          }
-          
-          .admin-main {
-            margin-left: 260px;
-          }
 
-          @media (max-width: 900px) {
-            .sidebar-close-btn {
-              display: block !important;
-            }
-            .hamburger-btn {
-              display: block !important;
-            }
-            .admin-main {
-              margin-left: 0 !important;
-            }
-            .welcome-text {
-              display: none !important;
-            }
-          }
-        `}</style>
       </div>
     </ToastContext.Provider>
   );

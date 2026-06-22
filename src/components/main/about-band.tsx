@@ -14,56 +14,27 @@ const ABOUT_CARDS = [
 
 export default function AboutBand() {
   return (
-    <section id="about" style={{
-      background: "linear-gradient(135deg,#0B1220,#0F2D4F)",
-      padding: "80px 64px", position: "relative", overflow: "hidden",
-    }}>
+    <section id="about" className="about-section">
       {/* Decorative Orb */}
-      <div style={{
-        content: "", position: "absolute", right: "-80px", top: "-80px",
-        width: "400px", height: "400px",
-        background: "radial-gradient(circle,rgba(20,184,166,.12) 0%,transparent 70%)",
-        borderRadius: "50%", pointerEvents: "none",
-      }} />
+      <div className="about-orb" />
 
-      <div style={{
-        display: "grid", gridTemplateColumns: "1fr 1fr",
-        gap: "80px", alignItems: "center",
-        position: "relative", zIndex: 1,
-      }}>
+      <div className="about-grid">
         {/* Left: Text */}
         <div>
-          <p style={{
-            fontSize: "12px", fontWeight: 700, letterSpacing: "2.5px",
-            textTransform: "uppercase", color: "#14B8A6", marginBottom: "12px",
-          }}>Who We Are</p>
-          <h2 style={{
-            fontSize: "clamp(28px,3.5vw,42px)", fontWeight: 800,
-            color: "#fff", letterSpacing: "-1.5px", lineHeight: 1.2, marginBottom: "14px",
-          }}>A Group Built for<br />Tomorrow&apos;s Healthcare</h2>
-          <p style={{
-            fontSize: "16px", color: "rgba(255,255,255,.6)", lineHeight: 1.7,
-            maxWidth: "580px", marginBottom: "32px",
-          }}>
+          <p className="about-subtitle">Who We Are</p>
+          <h2 className="about-title">A Group Built for<br />Tomorrow&apos;s Healthcare</h2>
+          <p className="about-text">
             Medicxus Group is a next-generation healthcare conglomerate committed to excellence across
             education, diagnostics, consultancy, and technology. We are investment-ready, globally connected,
             and locally committed.
           </p>
 
           {/* Mini Stats */}
-          <div style={{
-            display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginTop: "40px",
-          }}>
+          <div className="about-stats-grid">
             {ABOUT_STATS.map((stat) => (
-              <div key={stat.label} style={{
-                padding: "20px", background: "rgba(255,255,255,.05)",
-                border: "1px solid rgba(255,255,255,.08)", borderRadius: "12px",
-              }}>
-                <span style={{
-                  fontSize: "28px", fontWeight: 800, color: "#14B8A6",
-                  letterSpacing: "-1px", display: "block",
-                }}>{stat.num}</span>
-                <div style={{ fontSize: "12px", color: "rgba(255,255,255,.5)", marginTop: "4px" }}>
+              <div key={stat.label} className="about-stat-card">
+                <span className="about-stat-number">{stat.num}</span>
+                <div className="about-stat-label">
                   {stat.label}
                 </div>
               </div>
@@ -73,38 +44,17 @@ export default function AboutBand() {
 
         {/* Right: Cards Grid */}
         <div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+          <div className="about-cards-grid">
             {ABOUT_CARDS.map((card) => (
-              <div key={card.title} className="about-card" style={{
-                background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.1)",
-                borderRadius: "14px", padding: "22px", transition: "all .2s", cursor: "pointer",
-              }}>
-                <div style={{ fontSize: "22px", marginBottom: "10px" }}>{card.icon}</div>
-                <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#fff", marginBottom: "5px" }}>
-                  {card.title}
-                </h4>
-                <p style={{ fontSize: "12px", color: "rgba(255,255,255,.45)", lineHeight: 1.5 }}>
-                  {card.desc}
-                </p>
+              <div key={card.title} className="about-card">
+                <div className="about-card-icon">{card.icon}</div>
+                <h4 className="about-card-title">{card.title}</h4>
+                <p className="about-card-desc">{card.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
-
-      <style>{`
-        .about-card:hover {
-          background: rgba(255,255,255,.1) !important;
-          transform: translateY(-3px);
-        }
-        @media(max-width:900px){
-          section { padding: 64px 24px !important; }
-          section > div { grid-template-columns: 1fr !important; gap: 40px !important; }
-        }
-        @media(max-width:600px){
-          section > div > div:last-child > div { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </section>
   );
 }
