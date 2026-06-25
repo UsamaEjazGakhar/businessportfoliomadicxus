@@ -118,10 +118,19 @@ export default function ConsultantDashboard() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [modalPrescriptionId, setModalPrescriptionId] = useState<string | null>(null);
   const [modalIsRestore, setModalIsRestore] = useState(false);
+  const [modalIsPermanent, setModalIsPermanent] = useState(false);
 
   const openDeleteModal = (id: string, isDeleted: boolean) => {
     setModalPrescriptionId(id);
     setModalIsRestore(isDeleted);
+    setModalIsPermanent(false);
+    setShowDeleteModal(true);
+  };
+
+  const openPermanentDeleteModal = (id: string) => {
+    setModalPrescriptionId(id);
+    setModalIsRestore(false);
+    setModalIsPermanent(true);
     setShowDeleteModal(true);
   };
 
@@ -151,9 +160,50 @@ export default function ConsultantDashboard() {
     closeDeleteModal();
   };
 
+  // Permanent delete handler for deleted prescriptions
+  const confirmPermanentDelete = () => {
+    console.log("confirmPermanentDelete called! modalPrescriptionId:", modalPrescriptionId);
+    if (modalPrescriptionId) {
+      fetch(`/api/prescription-submissions`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ id: modalPrescriptionId, permanent: true }),
+      })
+        .then(res => {
+          console.log("Permanent delete response status:", res.status);
+          if (res.ok) {
+            fetchPrescriptions();
+          }
+        })
+        .catch(err => {
+          console.error("Error calling permanent delete API:", err);
+        });
+    }
+    closeDeleteModal();
+  };
+
   const handleDeletePrescription = (id: string, isDeleted: boolean) => {
     console.log("handleDeletePrescription called with id:", id, "isDeleted:", isDeleted);
     openDeleteModal(id, isDeleted);
+  };
+
+  // Permanent delete for already deleted prescriptions
+  const handlePermanentDelete = (id: string) => {
+    fetch(`/api/prescription-submissions`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ id, permanent: true }),
+    })
+      .then(res => {
+        if (res.ok) {
+          fetchPrescriptions();
+        }
+      })
+      .catch(err => {
+        console.error("Error calling permanent delete API:", err);
+      });
   };
 
   const handleSubmitToAdmin = async (id: string) => {
@@ -557,6 +607,24 @@ export default function ConsultantDashboard() {
                   >
                     {viewDeleted ? "Restore" : "Delete"}
                   </button>
+                  {viewDeleted && (
+                    <button
+                      onClick={() => openPermanentDeleteModal(prescription.id)}
+                      style={{
+                        padding: "6px 12px",
+                        background: "#991b1b",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        marginLeft: "4px",
+                      }}
+                    >
+                      Permanently Delete
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -631,17 +699,23 @@ export default function ConsultantDashboard() {
       maxWidth: '400px',
     }}>
       <h3 style={{ margin: 0, marginBottom: '12px', color: '#0f172a' }}>
-        {modalIsRestore ? 'Restore Prescription?' : 'Delete Prescription?'}
+        {modalIsRestore ? 'Restore Prescription?' : modalIsPermanent ? 'Permanently Delete Prescription?' : 'Delete Prescription?'}
       </h3>
       <p style={{ margin: 0, marginBottom: '16px', color: '#475569' }}>
-        Are you sure you want to {modalIsRestore ? 'restore' : 'delete'} this prescription?
+        {modalIsRestore ? 'Are you sure you want to restore this prescription?' : modalIsPermanent ? 'Are you sure you want to permanently delete this prescription? This action cannot be undone.' : 'Are you sure you want to delete this prescription?'}
       </p>
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-        <button onClick={closeDeleteModal} style={{ padding: '6px 12px', background: '#e2e8f0', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
-        <button onClick={confirmDelete} style={{ padding: '6px 12px', background: modalIsRestore ? '#22c55e' : '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
-          {modalIsRestore ? 'Restore' : 'Delete'}
-        </button>
-      </div>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          <button onClick={closeDeleteModal} style={{ padding: '6px 12px', background: '#e2e8f0', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
+          {modalIsRestore && (
+            <button onClick={confirmDelete} style={{ padding: '6px 12px', background: '#22c55e', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Restore</button>
+          )}
+          {!modalIsRestore && !modalIsPermanent && (
+            <button onClick={confirmDelete} style={{ padding: '6px 12px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Delete</button>
+          )}
+          {modalIsPermanent && (
+            <button onClick={confirmPermanentDelete} style={{ padding: '6px 12px', background: '#991b1b', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Permanently Delete</button>
+          )}
+        </div>
     </div>
   </div>
 )}

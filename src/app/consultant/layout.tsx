@@ -165,7 +165,11 @@ export default function ConsultantLayout({ children }: { children: ReactNode }) 
               </div>
             </div>
             <button
-              onClick={() => signOut()}
+              onClick={async (e) => {
+                e.preventDefault();
+                await signOut({ redirect: false });
+                router.push('/');
+              }}
               style={{
                 width: "100%",
                 display: "flex",

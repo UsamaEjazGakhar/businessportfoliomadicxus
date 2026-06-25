@@ -95,7 +95,6 @@ export async function POST(req: NextRequest) {
         patientAge: validatedData.patientAge ?? null,
         patientGender: validatedData.patientGender ?? null,
         date: validatedData.date ?? null,
-        visitNumber: validatedData.visitNumber ?? null,
         contactCnic: validatedData.contactCnic ?? null,
         address: validatedData.address ?? null,
         sonDaughterWifeOf: validatedData.sonDaughterWifeOf ?? null,
@@ -146,7 +145,14 @@ export async function DELETE(req: NextRequest) {
     if (!session || !["SUPER_ADMIN", "EDITOR", "CONSULTANT"].includes(session.user.role)) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
-    const { id, restore } = await req.json();
+    const { id, restore, permanent } = await req.json();
+
+    if (permanent && ["SUPER_ADMIN", "CONSULTANT"].includes(session.user.role)) {
+      await prisma.prescriptionSubmission.delete({
+        where: { id },
+      });
+      return NextResponse.json({ success: true, message: "Permanently deleted" }, { status: 200 });
+    }
 
     const updated = await prisma.prescriptionSubmission.update({
       where: { id },
@@ -177,7 +183,7 @@ export async function PATCH(req: NextRequest) {
       const updated = await prisma.prescriptionSubmission.update({
         where: { id },
         data: {
-          submittedToAdmin: true,
+          submittedToAdmin: true as any,
           submittedAt: new Date(),
         },
       });

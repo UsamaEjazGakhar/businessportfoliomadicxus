@@ -26,6 +26,8 @@ export default withAuth(
       authorized: ({ token, req }) => {
         const pathname = req?.nextUrl?.pathname;
         if (pathname === "/" || !pathname) return true;
+        // Allow NextAuth API routes
+        if (pathname.startsWith("/api/auth")) return true;
         if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
           return !!token;
         }

@@ -48,17 +48,13 @@ export default function LoginPage() {
         ? "Invalid username or password, or your account is pending approval or restricted" 
         : result.error;
       setError(message);
+      setLoading(false);
     } else {
-      // Get session to check role
-      const sessionRes = await fetch("/api/auth/session");
-      const sessionData = await sessionRes.json();
-      if (sessionData?.user?.role === "CONSULTANT") {
-        router.push("/consultant");
-      } else {
-        router.push("/admin");
-      }
+      // After successful sign‑in, clear loading state first
+      setLoading(false);
+      // Directly navigate to consultant dashboard (adjust as needed)
+      router.push("/consultant");
     }
-    setLoading(false);
   };
 
   const [signupSuccess, setSignupSuccess] = useState("");
