@@ -23,11 +23,37 @@ interface PrescriptionSubmission {
   patientAge?: string;
   patientGender?: string;
   date?: string;
+  visitNumber?: string;
+  contactCnic?: string;
+  address?: string;
+  sonDaughterWifeOf?: string;
+  weight?: string;
+  vco?: string;
+  bp?: string;
+  pulse?: string;
+  temp?: string;
+  spo2?: string;
+  bsr?: string;
+  presentingComplaint?: string;
+  abdomen?: string;
+  resp?: string;
+  cvs?: string;
+  cns?: string;
+  otherFindings?: string;
+  htn?: string;
+  dm?: string;
+  hepatitis?: string;
+  kd?: string;
+  allergy?: string;
+  addiction?: string;
+  prevMed?: string;
   rxContent?: string;
   adviceContent?: string;
   signature?: string;
   createdAt: string;
   isDeleted: boolean;
+  submittedToAdmin: boolean;
+  submittedAt?: string;
   consultant?: User;
 }
 
@@ -54,14 +80,13 @@ export default function ConsultantDashboard() {
 
   useEffect(() => {
       const viewParam = searchParams.get("view");
-      // Sync URL param with view state, handling all possible views and avoiding loops
+      // Sync URL param with view state more directly to avoid double routing
       if (viewParam && viewParam !== view) {
-        // Cast to the allowed view types
-        updateView(viewParam as "prescriptions" | "prescription" | "view-prescription" | "dashboard");
+        setView(viewParam as "dashboard" | "prescription" | "prescriptions" | "view-prescription");
       } else if (!viewParam && view !== "dashboard") {
-        updateView("dashboard");
+        setView("dashboard");
       }
-    }, [searchParams, view]);
+    }, [searchParams]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -106,22 +131,49 @@ export default function ConsultantDashboard() {
   };
 
   const confirmDelete = () => {
+    console.log("confirmDelete called! modalPrescriptionId:", modalPrescriptionId);
+    console.log("modalIsRestore:", modalIsRestore);
     if (modalPrescriptionId) {
-      fetch(`/api/prescription-submissions/${modalPrescriptionId}`, {
+      fetch(`/api/prescription-submissions`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ restore: modalIsRestore }),
+        credentials: "include",
+        body: JSON.stringify({ id: modalPrescriptionId, restore: modalIsRestore }),
       }).then(res => {
+        console.log("API response status:", res.status);
         if (res.ok) {
           fetchPrescriptions();
         }
+      }).catch(err => {
+        console.error("Error calling delete/restore API:", err);
       });
     }
     closeDeleteModal();
   };
 
   const handleDeletePrescription = (id: string, isDeleted: boolean) => {
+    console.log("handleDeletePrescription called with id:", id, "isDeleted:", isDeleted);
     openDeleteModal(id, isDeleted);
+  };
+
+  const handleSubmitToAdmin = async (id: string) => {
+    try {
+      const res = await fetch(`/api/prescription-submissions`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ id, action: "submitToAdmin" }),
+      });
+      if (res.ok) {
+        fetchPrescriptions();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDownloadPrescription = (prescription: PrescriptionSubmission) => {
+    openViewModal(prescription);
   };
 
   const [showViewModal, setShowViewModal] = useState(false);
@@ -175,21 +227,28 @@ export default function ConsultantDashboard() {
                 View Prescriptions
               </button>
               <button
-                onClick={() => updateView("prescription")}
-                style={{
-                  padding: "10px 20px",
-                  background: "linear-gradient(135deg, #0f4c81, #14b8a6)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "10px",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                }}
-              >
-                Create Prescription
-              </button>
+                  type="button"
+                  onClick={() => {
+                    console.log('New Prescription clicked');
+                    // Directly replace URL param to avoid state sync issues
+                    const params = new URLSearchParams(window.location.search);
+                    params.set('view', 'prescription');
+                    router.replace(`/consultant?${params.toString()}`);
+                  }}
+                  style={{
+                    padding: "10px 20px",
+                    background: "linear-gradient(135deg,#0f4c81,#14b8a6)",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "10px",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  + New Prescription
+                </button>
             </div>
           </div>
 
@@ -277,6 +336,52 @@ export default function ConsultantDashboard() {
           </div>
         </div>
       )}
+{view === "prescription" && (
+  <div style={{ padding: "32px" }}>
+    <h2 style={{ fontSize: "24px", fontWeight: 700, color: "#0f172a", marginBottom: "16px" }}>
+      New Prescription
+    </h2>
+    {/* Render the prescription form with placeholder data */}
+    <PrescriptionView data={{
+      doctorName: "Dr. Kazim Raza",
+      doctorQualifications: "MBBS RAMP",
+      pmdcRegNumber: "7984414-01-M",
+      uidAmb: "",
+      timings: "05:00 pm to 09:00 pm",
+      patientName: "",
+      patientAge: "",
+      patientGender: "",
+      date: new Date().toISOString().split('T')[0],
+      visitNumber: "",
+      contactCnic: "",
+      address: "",
+      sonDaughterWifeOf: "",
+      weight: "",
+      vco: "",
+      bp: "",
+      pulse: "",
+      temp: "",
+      spo2: "",
+      bsr: "",
+      presentingComplaint: "",
+      abdomen: "",
+      resp: "",
+      cvs: "",
+      cns: "",
+      otherFindings: "",
+      htn: "",
+      dm: "",
+      hepatitis: "",
+      kd: "",
+      allergy: "",
+      addiction: "",
+      prevMed: "",
+      rxContent: "",
+      adviceContent: "",
+      signature: "",
+    }} />
+  </div>
+)}
 
       {view === "prescriptions" && (
         <div>
@@ -375,46 +480,88 @@ export default function ConsultantDashboard() {
                   </thead>
                   <tbody>
                     {prescriptions.map(prescription => (
-                      <tr key={prescription.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                        <td style={{ padding: "12px 0", fontSize: "14px", fontWeight: 500, color: "#0f172a" }}>{prescription.patientName || "N/A"}</td>
-                        <td style={{ padding: "12px 0", fontSize: "13px", color: "#475569" }}>{prescription.date || "N/A"}</td>
-                        <td style={{ padding: "12px 0", fontSize: "13px", color: "#475569" }}>{new Date(prescription.createdAt).toLocaleString()}</td>
-                        <td style={{ padding: "12px 0" }}>
-                          <button
-                            onClick={() => openViewModal(prescription)}
-                            style={{
-                              padding: "6px 12px",
-                              background: "rgba(15,76,129,0.1)",
-                              color: "#0f4c81",
-                              border: "none",
-                              borderRadius: "6px",
-                              fontSize: "12px",
-                              fontWeight: 600,
-                              cursor: "pointer",
-                              marginRight: "8px",
-                            }}
-                          >
-                            View
-                          </button>
-                          <button
-                            onClick={() => handleDeletePrescription(prescription.id, viewDeleted)}
-                            style={{
-                              padding: "6px 12px",
-                              background: viewDeleted ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
-                              color: viewDeleted ? "#22c55e" : "#ef4444",
-                              border: "none",
-                              borderRadius: "6px",
-                              fontSize: "12px",
-                              fontWeight: 600,
-                              cursor: "pointer",
-                            }}
-                          >
-                            {viewDeleted ? "Restore" : "Delete"}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+              <tr key={prescription.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                <td style={{ padding: "12px 0", fontSize: "14px", fontWeight: 500, color: "#0f172a" }}>
+                  {prescription.patientName || "N/A"}
+                  {prescription.submittedToAdmin && (
+                    <span style={{ marginLeft: "8px", fontSize: "11px", color: "#22c55e", fontWeight: "600" }}>
+                      (Submitted)
+                    </span>
+                  )}
+                </td>
+                <td style={{ padding: "12px 0", fontSize: "13px", color: "#475569" }}>{prescription.date || "N/A"}</td>
+                <td style={{ padding: "12px 0", fontSize: "13px", color: "#475569" }}>{new Date(prescription.createdAt).toLocaleString()}</td>
+                <td style={{ padding: "12px 0" }}>
+                  <button
+                    onClick={() => openViewModal(prescription)}
+                    style={{
+                      padding: "6px 12px",
+                      background: "rgba(15,76,129,0.1)",
+                      color: "#0f4c81",
+                      border: "none",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      marginRight: "8px",
+                    }}
+                  >
+                    View
+                  </button>
+                  <button
+                    onClick={() => handleDownloadPrescription(prescription)}
+                    style={{
+                      padding: "6px 12px",
+                      background: "rgba(101,163,13,0.1)",
+                      color: "#65a30d",
+                      border: "none",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      marginRight: "8px",
+                    }}
+                  >
+                    Download
+                  </button>
+                  {!viewDeleted && !prescription.submittedToAdmin && (
+                    <button
+                      onClick={() => handleSubmitToAdmin(prescription.id)}
+                      style={{
+                        padding: "6px 12px",
+                        background: "rgba(59,130,246,0.1)",
+                        color: "#3b82f6",
+                        border: "none",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        marginRight: "8px",
+                      }}
+                    >
+                      Submit to Admin
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDeletePrescription(prescription.id, prescription.isDeleted)}
+                    style={{
+                      padding: "6px 12px",
+                      background: viewDeleted ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
+                      color: viewDeleted ? "#22c55e" : "#ef4444",
+                      border: "none",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {viewDeleted ? "Restore" : "Delete"}
+                  </button>
+                </td>
+              </tr>
+            ))}
                   </tbody>
+{/* Modal moved outside table */}
                 </table>
               </div>
             )}
@@ -424,7 +571,7 @@ export default function ConsultantDashboard() {
 
       {/* Prescription View Modal */}
       {showViewModal && selectedPrescription && (
-        <div style={{
+        <div className="prescription-modal-overlay" style={{
           position: "fixed",
           top: 0,
           left: 0,
@@ -436,7 +583,7 @@ export default function ConsultantDashboard() {
           justifyContent: "center",
           zIndex: 1000,
         }}>
-          <div style={{
+          <div className="prescription-modal" style={{
             background: "#fff",
             padding: "24px",
             borderRadius: "12px",
@@ -446,7 +593,7 @@ export default function ConsultantDashboard() {
             overflowY: "auto",
             boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
           }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <div className="prescription-modal-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
               <h2 style={{ fontSize: "24px", fontWeight: 800, color: "#0f172a" }}>Prescription Details</h2>
               <button onClick={() => setShowViewModal(false)} style={{
                 background: "#e2e8f0",
@@ -456,10 +603,48 @@ export default function ConsultantDashboard() {
                 cursor: "pointer",
               }}>✕</button>
             </div>
-            <PrescriptionView data={selectedPrescription} />
+            <PrescriptionView data={selectedPrescription} readOnly={true} />
           </div>
         </div>
       )}
+      
+
+{/* Delete Confirmation Modal */}
+{showDeleteModal && (
+  <div style={{
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    background: 'rgba(0,0,0,0.4)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 2000,
+  }}>
+    <div style={{
+      background: '#fff',
+      padding: '20px 30px',
+      borderRadius: '8px',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+      maxWidth: '400px',
+    }}>
+      <h3 style={{ margin: 0, marginBottom: '12px', color: '#0f172a' }}>
+        {modalIsRestore ? 'Restore Prescription?' : 'Delete Prescription?'}
+      </h3>
+      <p style={{ margin: 0, marginBottom: '16px', color: '#475569' }}>
+        Are you sure you want to {modalIsRestore ? 'restore' : 'delete'} this prescription?
+      </p>
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+        <button onClick={closeDeleteModal} style={{ padding: '6px 12px', background: '#e2e8f0', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
+        <button onClick={confirmDelete} style={{ padding: '6px 12px', background: modalIsRestore ? '#22c55e' : '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
+          {modalIsRestore ? 'Restore' : 'Delete'}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
     </div>
   );

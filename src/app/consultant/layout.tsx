@@ -109,7 +109,6 @@ export default function ConsultantLayout({ children }: { children: ReactNode }) 
                     : "transparent",
                   borderLeft: isActive ? "3px solid #14b8a6" : "3px solid transparent",
                   color: isActive ? "#14b8a6" : "#94a3b8",
-                  border: "none",
                   fontSize: "14px",
                   fontWeight: 500,
                   cursor: "pointer",

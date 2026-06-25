@@ -1,46 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-enum Role {
-  SUPER_ADMIN
-  EDITOR
-  AUDITOR
-  CONSULTANT
-}
-
-enum ApprovalStatus {
-  PENDING
-  APPROVED
-  RESTRICTED
-}
-
-enum ProjectStatus {
-  ACTIVE
-  IN_DEVELOPMENT
-  MAINTENANCE
-  REDIRECTED
-}
-
 model User {
-  id                   String                  @id @default(uuid())
-  email                String                  @unique
-  username             String                  @unique
-  password             String                  // Managed with bcrypt hashing
-  name                 String
-  location             String?
-  role                 Role                    @default(EDITOR)
-  approvalStatus       ApprovalStatus          @default(APPROVED)
-  isDeleted            Boolean                 @default(false)
-  deletedAt            DateTime?
-  createdAt            DateTime                @default(now())
-  updatedAt            DateTime                @updatedAt
-  logs                 AuditLog[]
+  id                      String                   @id @default(uuid())
+  email                   String                   @unique
+  username                String                   @unique
+  password                String
+  name                    String
+  role                    Role                     @default(EDITOR)
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  location                String?
+  approvalStatus          ApprovalStatus           @default(APPROVED)
+  deletedAt               DateTime?
+  isDeleted               Boolean                  @default(false)
+  logs                    AuditLog[]
   prescriptionSubmissions PrescriptionSubmission[]
 
   @@map("users")
@@ -51,12 +31,12 @@ model BusinessDivision {
   title       String    @unique
   slug        String    @unique
   description String    @db.Text
-  icon        String    // Emojis/Unicode references (e.g., '🎓', '🏥')
-  iconColor   String    // Mapped variable (e.g., 'icon-blue', 'icon-teal')
+  icon        String
+  iconColor   String
   sortOrder   Int       @default(0)
-  targetUrl   String?   @db.VarChar(512) // Destination website address for redirect
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  targetUrl   String?   @db.VarChar(512)
   projects    Project[]
 
   @@index([slug])
@@ -64,22 +44,22 @@ model BusinessDivision {
 }
 
 model Project {
-  id                 String           @id @default(uuid())
-  divisionId         String
-  division           BusinessDivision @relation(fields: [divisionId], references: [id], onDelete: Cascade)
-  title              String
-  slug               String           @unique
-  description        String           @db.Text
-  thumbnailUrl       String           @db.VarChar(512)
-  targetUrl          String           @db.VarChar(512) // Destination website address
-  status             ProjectStatus    @default(IN_DEVELOPMENT)
-  category           String           // Mapped taxonomy ('Education', 'Healthcare', etc.)
-  sortOrder          Int              @default(0)
-  clickCount         Int              @default(0) // Redirect analytics tracking
-  seoTitle           String?          @db.VarChar(120)
-  seoDescription     String?          @db.VarChar(255)
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
+  id             String           @id @default(uuid())
+  divisionId     String
+  title          String
+  slug           String           @unique
+  description    String           @db.Text
+  thumbnailUrl   String           @db.VarChar(512)
+  targetUrl      String           @db.VarChar(512)
+  status         ProjectStatus    @default(IN_DEVELOPMENT)
+  category       String
+  sortOrder      Int              @default(0)
+  clickCount     Int              @default(0)
+  seoTitle       String?          @db.VarChar(120)
+  seoDescription String?          @db.VarChar(255)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  division       BusinessDivision @relation(fields: [divisionId], references: [id], onDelete: Cascade)
 
   @@index([divisionId])
   @@index([slug])
@@ -89,8 +69,8 @@ model Project {
 model Testimonial {
   id         String   @id @default(uuid())
   authorName String
-  role       String   // e.g. "Hospital Director", "Medical Student"
-  company    String?  // Optional affiliate company
+  role       String
+  company    String?
   content    String   @db.Text
   rating     Int      @default(5)
   avatarUrl  String?  @db.VarChar(512)
@@ -114,7 +94,7 @@ model Faq {
 model SystemSetting {
   id        String   @id @default(uuid())
   key       String   @unique
-  value     String   @db.Text // JSON configuration blocks
+  value     String   @db.Text
   updatedAt DateTime @updatedAt
 
   @@map("system_settings")
@@ -137,11 +117,11 @@ model ContactInquiry {
 model AuditLog {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  action    String   // CRUD operation (e.g. 'CREATE_PROJECT', 'DELETE_USER')
-  target    String   // Entity identifier details
+  action    String
+  target    String
   ipAddress String
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@map("audit_logs")
@@ -163,253 +143,267 @@ model BlogPost {
   @@map("blog_posts")
 }
 
-// Admission Form Template Model
 model AdmissionFormTemplate {
-  id                          String                   @id @default(uuid())
-  instituteName               String                   @default("Care Institute of Health Sciences")
-  instituteAddress            String                   @default("Plot 71-C, Satellite Town, Block-A, Rawalpindi")
-  instituteContact            String                   @default("0333-1165573")
-  createdAt                   DateTime                 @default(now())
-  updatedAt                   DateTime                 @updatedAt
+  id               String   @id @default(uuid())
+  instituteName    String   @default("Care Institute of Health Sciences")
+  instituteAddress String   @default("Plot 71-C, Satellite Town, Block-A, Rawalpindi")
+  instituteContact String   @default("0333-1165573")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@map("admission_form_templates")
 }
 
-// Admission Form Submission Model
 model AdmissionFormSubmission {
-  id                          String                   @id @default(uuid())
-  instituteName               String
-  instituteAddress            String
-  instituteContact            String
-  
-  // Personal Information
-  applicantName               String?
-  fatherName                  String?
-  dateOfBirth                 String?
-  cnicBFormNumber             String?
-  domicileDistrict            String?
-  permanentAddress            String?
-  postalAddress               String?
-  mobileNumber                String?
-  photoUrl                    String?  @db.Text
-
-  // Qualification
-  qualifications              QualificationSubmission[]
-
-  // Signatures
-  applicantSignatureUrl       String?  @db.Text
-  guardianSignatureUrl        String?  @db.Text
-
-  // Office Use
-  admissionGranted            Boolean?
-  admissionDenied             Boolean?
-  isRead                      Boolean                   @default(false)
-  assignedNotes               String?                   @db.Text
-
-  createdAt                   DateTime                 @default(now())
-  updatedAt                   DateTime                 @updatedAt
+  id                    String                    @id @default(uuid())
+  instituteName         String
+  instituteAddress      String
+  instituteContact      String
+  applicantName         String?
+  fatherName            String?
+  dateOfBirth           String?
+  cnicBFormNumber       String?
+  domicileDistrict      String?
+  permanentAddress      String?
+  postalAddress         String?
+  mobileNumber          String?
+  photoUrl              String?                   @db.Text
+  applicantSignatureUrl String?                   @db.Text
+  guardianSignatureUrl  String?                   @db.Text
+  admissionGranted      Boolean?
+  admissionDenied       Boolean?
+  isRead                Boolean                   @default(false)
+  assignedNotes         String?                   @db.Text
+  createdAt             DateTime                  @default(now())
+  updatedAt             DateTime                  @updatedAt
+  qualifications        QualificationSubmission[]
 
   @@map("admission_form_submissions")
 }
 
 model QualificationSubmission {
-  id                          String                   @id @default(uuid())
-  admissionFormSubmissionId   String
-  admissionFormSubmission     AdmissionFormSubmission  @relation(fields: [admissionFormSubmissionId], references: [id], onDelete: Cascade)
-  degreeProgram               String
-  scienceOrArts               String?
-  totalMarks                  String?
-  marksObtained               String?
-  percentage                  String?
-  // Science Subject Marks
-  physicsMarks                String?
-  chemistryMarks              String?
-  biologyMarks                String?
-  scienceTotal                String?
-  sciencePercentage           String?
+  id                        String                  @id @default(uuid())
+  admissionFormSubmissionId String
+  degreeProgram             String
+  scienceOrArts             String?
+  totalMarks                String?
+  marksObtained             String?
+  percentage                String?
+  physicsMarks              String?
+  chemistryMarks            String?
+  biologyMarks              String?
+  scienceTotal              String?
+  sciencePercentage         String?
+  createdAt                 DateTime                @default(now())
+  admissionFormSubmission   AdmissionFormSubmission @relation(fields: [admissionFormSubmissionId], references: [id], onDelete: Cascade)
 
-  createdAt                   DateTime                 @default(now())
-
+  @@index([admissionFormSubmissionId], map: "qualification_submissions_admissionFormSubmissionId_fkey")
   @@map("qualification_submissions")
 }
 
-// Fee Structure Template Models
 model NursingFeeStructureTemplate {
-  id                          String                   @id @default(uuid())
-  part1AdmissionFee           String                   @default("75000.00")
-  part1MonthlyFee             String                   @default("10000.00")
-  part1TotalFee               String                   @default("195000.00")
-  part2MonthlyFee             String                   @default("10000.00")
-  part2TotalFee               String                   @default("120000.00")
-  note                        String                   @default("All Fee are \"Non Refundable\"")
-  examFeeNote                 String                   @default("Examination Fee will be paid according to Nursing Council of Pakistan")
-  admissionCriteria           String                   @default("Matric with Science\n45% lverall")
-  ageLimit                    String                   @default("35 years")
-  scholarship                 String                   @default("First 10 students will get 10% discount on Admission")
-  createdAt                   DateTime                 @default(now())
-  updatedAt                   DateTime                 @updatedAt
+  id                String   @id @default(uuid())
+  part1AdmissionFee String   @default("75000.00")
+  part1MonthlyFee   String   @default("10000.00")
+  part1TotalFee     String   @default("195000.00")
+  part2MonthlyFee   String   @default("10000.00")
+  part2TotalFee     String   @default("120000.00")
+  note              String   @default("All Fee are \"Non Refundable\"")
+  examFeeNote       String   @default("Examination Fee will be paid according to Nursing Council of Pakistan")
+  admissionCriteria String   @default("Matric with Science\n45% lverall")
+  ageLimit          String   @default("35 years")
+  scholarship       String   @default("First 10 students will get 10% discount on Admission")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@map("nursing_fee_structure_templates")
 }
 
 model ParamedicalFeeStructureLabTemplate {
-  id                          String                   @id @default(uuid())
-  part1AdmissionFee           String                   @default("30000.00")
-  part1MonthlyFee             String                   @default("5000.00")
-  part1TotalFee               String                   @default("90000.00")
-  part2MonthlyFee             String                   @default("5000.00")
-  part2TotalFee               String                   @default("60000.00")
-  note                        String                   @default("All Fee are \"Non Refundable\"")
-  examFeeNote                 String                   @default("Examination Fee will be paid according\nto (Punjab Medical Faculty) / Federal\nBoard")
-  admissionCriteria           String                   @default("Matric with Science & Computer Science\n40% lverall")
-  ageLimit                    String                   @default("No Age Limit")
-  scholarship                 String                   @default("First 10 students will get 10% discount on Admission")
-  createdAt                   DateTime                 @default(now())
-  updatedAt                   DateTime                 @updatedAt
+  id                String   @id @default(uuid())
+  part1AdmissionFee String   @default("30000.00")
+  part1MonthlyFee   String   @default("5000.00")
+  part1TotalFee     String   @default("90000.00")
+  part2MonthlyFee   String   @default("5000.00")
+  part2TotalFee     String   @default("60000.00")
+  note              String   @default("All Fee are \"Non Refundable\"")
+  examFeeNote       String   @default("Examination Fee will be paid according\nto (Punjab Medical Faculty) / Federal\nBoard")
+  admissionCriteria String   @default("Matric with Science & Computer Science\n40% lverall")
+  ageLimit          String   @default("No Age Limit")
+  scholarship       String   @default("First 10 students will get 10% discount on Admission")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@map("paramedical_fee_structure_lab_templates")
 }
 
 model ParamedicalFeeStructureMLTTemplate {
-  id                          String                   @id @default(uuid())
-  part1AdmissionFee           String                   @default("30000.00")
-  part1MonthlyFee             String                   @default("5000.00")
-  part1TotalFee               String                   @default("90000.00")
-  part2MonthlyFee             String                   @default("5000.00")
-  part2TotalFee               String                   @default("60000.00")
-  note                        String                   @default("All Fee are \"Non Refundable\"")
-  examFeeNote                 String                   @default("Examination Fee will be paid according\nto (Punjab Medical Faculty) / Federal\nBoard")
-  admissionCriteria           String                   @default("Matric with Science & Computer Science\n40% iverall")
-  ageLimit                    String                   @default("No Age Limit")
-  scholarship                 String                   @default("First 10 students will get 10% discount on Admission")
-  createdAt                   DateTime                 @default(now())
-  updatedAt                   DateTime                 @updatedAt
+  id                String   @id @default(uuid())
+  part1AdmissionFee String   @default("30000.00")
+  part1MonthlyFee   String   @default("5000.00")
+  part1TotalFee     String   @default("90000.00")
+  part2MonthlyFee   String   @default("5000.00")
+  part2TotalFee     String   @default("60000.00")
+  note              String   @default("All Fee are \"Non Refundable\"")
+  examFeeNote       String   @default("Examination Fee will be paid according\nto (Punjab Medical Faculty) / Federal\nBoard")
+  admissionCriteria String   @default("Matric with Science & Computer Science\n40% iverall")
+  ageLimit          String   @default("No Age Limit")
+  scholarship       String   @default("First 10 students will get 10% discount on Admission")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@map("paramedical_fee_structure_mlt_templates")
 }
 
-// Prescription Template Model
 model PrescriptionTemplate {
-  id                          String                   @id @default(uuid())
-  doctorName                  String                   @default("Medical Prescription")
-  doctorQualifications        String                   @default("MBBS, &MP")
-  pmdcRegNumber               String                   @default("798414-01-M")
-  uidAmb                      String                   @default("UID/AMB 2026")
-  timings                     String                   @default("05:00 pm to 09:00 pm")
-  createdAt                   DateTime                 @default(now())
-  updatedAt                   DateTime                 @updatedAt
+  id                   String   @id @default(uuid())
+  doctorName           String   @default("Medical Prescription")
+  doctorQualifications String   @default("MBBS, &MP")
+  pmdcRegNumber        String   @default("798414-01-M")
+  uidAmb               String   @default("UID/AMB 2026")
+  timings              String   @default("05:00 pm to 09:00 pm")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   @@map("prescription_templates")
 }
 
-// Prescription Submission Model
 model PrescriptionSubmission {
-  id                          String                   @id @default(uuid())
-  consultantId                String?
-  consultant                  User?                    @relation(fields: [consultantId], references: [id])
-  doctorName                  String
-  doctorQualifications        String
-  pmdcRegNumber               String
-  uidAmb                      String
-  timings                     String
-  
-  // Patient details
-  patientName                 String?
-  patientAge                  String?
-  patientGender               String?
-  date                        String?
-  
-  // Rx & Advice
-  rxContent                   String?  @db.Text
-  adviceContent               String?  @db.Text
-  signature                   String?  @db.Text
-  
-  isRead                      Boolean                   @default(false)
-  assignedNotes               String?                   @db.Text
-  isDeleted                   Boolean                   @default(false)
-  deletedAt                   DateTime?
+  id                   String    @id @default(uuid())
+  doctorName           String
+  doctorQualifications String
+  pmdcRegNumber        String
+  uidAmb               String
+  timings              String
+  patientName          String?
+  patientAge           String?
+  patientGender        String?
+  date                 String?
+  visitNumber          String?
+  contactCnic          String?
+  address              String?
+  sonDaughterWifeOf    String?
+  weight               String?
+  vco                  String?
+  bp                   String?
+  pulse                String?
+  temp                 String?
+  spo2                 String?
+  bsr                  String?
+  presentingComplaint  String?   @db.Text
+  abdomen              String?
+  resp                 String?
+  cvs                  String?
+  cns                  String?
+  otherFindings        String?
+  htn                  String?
+  dm                   String?
+  hepatitis            String?
+  kd                   String?
+  allergy              String?
+  addiction            String?
+  prevMed              String?
+  rxContent            String?   @db.Text
+  adviceContent        String?   @db.Text
+  isRead               Boolean   @default(false)
+  assignedNotes        String?   @db.Text
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  consultantId         String?
+  deletedAt            DateTime?
+  isDeleted            Boolean   @default(false)
+  submittedToAdmin     Boolean   @default(false)
+  submittedAt          DateTime?
+  signature            String?   @db.Text
+  consultant           User?     @relation(fields: [consultantId], references: [id])
 
-  createdAt                   DateTime                 @default(now())
-  updatedAt                   DateTime                 @updatedAt
-
+  @@index([consultantId], map: "prescription_submissions_consultantId_fkey")
+  @@index([isDeleted], map: "prescription_submissions_isDeleted_idx")
   @@map("prescription_submissions")
 }
 
-// Fee Structure Submission Models
 model NursingFeeStructureSubmission {
-  id                          String                   @id @default(uuid())
-  part1AdmissionFee           String
-  part1MonthlyFee             String
-  part1TotalFee               String
-  part2MonthlyFee             String
-  part2TotalFee               String
-  note                        String
-  examFeeNote                 String
-  admissionCriteria           String
-  ageLimit                    String
-  scholarship                 String
-  
-  // User details
-  applicantName               String?
-  applicantContact            String?
-  
-  isRead                      Boolean                   @default(false)
-  assignedNotes               String?                   @db.Text
-
-  createdAt                   DateTime                 @default(now())
-  updatedAt                   DateTime                 @updatedAt
+  id                String   @id @default(uuid())
+  part1AdmissionFee String
+  part1MonthlyFee   String
+  part1TotalFee     String
+  part2MonthlyFee   String
+  part2TotalFee     String
+  note              String
+  examFeeNote       String
+  admissionCriteria String
+  ageLimit          String
+  scholarship       String
+  applicantName     String?
+  applicantContact  String?
+  isRead            Boolean  @default(false)
+  assignedNotes     String?  @db.Text
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@map("nursing_fee_structure_submissions")
 }
 
 model ParamedicalFeeStructureLabSubmission {
-  id                          String                   @id @default(uuid())
-  part1AdmissionFee           String
-  part1MonthlyFee             String
-  part1TotalFee               String
-  part2MonthlyFee             String
-  part2TotalFee               String
-  note                        String
-  examFeeNote                 String
-  admissionCriteria           String
-  ageLimit                    String
-  scholarship                 String
-  
-  // User details
-  applicantName               String?
-  applicantContact            String?
-  
-  isRead                      Boolean                   @default(false)
-  assignedNotes               String?                   @db.Text
-
-  createdAt                   DateTime                 @default(now())
-  updatedAt                   DateTime                 @updatedAt
+  id                String   @id @default(uuid())
+  part1AdmissionFee String
+  part1MonthlyFee   String
+  part1TotalFee     String
+  part2MonthlyFee   String
+  part2TotalFee     String
+  note              String
+  examFeeNote       String
+  admissionCriteria String
+  ageLimit          String
+  scholarship       String
+  applicantName     String?
+  applicantContact  String?
+  isRead            Boolean  @default(false)
+  assignedNotes     String?  @db.Text
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@map("paramedical_fee_structure_lab_submissions")
 }
 
 model ParamedicalFeeStructureMLTSubmission {
-  id                          String                   @id @default(uuid())
-  part1AdmissionFee           String
-  part1MonthlyFee             String
-  part1TotalFee               String
-  part2MonthlyFee             String
-  part2TotalFee               String
-  note                        String
-  examFeeNote                 String
-  admissionCriteria           String
-  ageLimit                    String
-  scholarship                 String
-  
-  // User details
-  applicantName               String?
-  applicantContact            String?
-  
-  isRead                      Boolean                   @default(false)
-  assignedNotes               String?                   @db.Text
-
-  createdAt                   DateTime                 @default(now())
-  updatedAt                   DateTime                 @updatedAt
+  id                String   @id @default(uuid())
+  part1AdmissionFee String
+  part1MonthlyFee   String
+  part1TotalFee     String
+  part2MonthlyFee   String
+  part2TotalFee     String
+  note              String
+  examFeeNote       String
+  admissionCriteria String
+  ageLimit          String
+  scholarship       String
+  applicantName     String?
+  applicantContact  String?
+  isRead            Boolean  @default(false)
+  assignedNotes     String?  @db.Text
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@map("paramedical_fee_structure_mlt_submissions")
+}
+
+enum Role {
+  SUPER_ADMIN
+  EDITOR
+  AUDITOR
+  CONSULTANT
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  RESTRICTED
+}
+
+enum ProjectStatus {
+  ACTIVE
+  IN_DEVELOPMENT
+  MAINTENANCE
+  REDIRECTED
 }
