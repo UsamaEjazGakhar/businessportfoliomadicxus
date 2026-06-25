@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { ApprovalStatus } from "@prisma/client";
 
 // Ensure NEXTAUTH_URL is set for Vercel deployments
 // NEXTAUTH_URL will be supplied via Vercel environment variables.
@@ -35,9 +36,13 @@ export const authOptions: NextAuthOptions = {
           where: { username: credentials.username },
         });
         if (!user) return null;
+        if (user.isDeleted) return null;
+        if (user.approvalStatus === ApprovalStatus.PENDING || user.approvalStatus === ApprovalStatus.RESTRICTED) {
+          return null;
+        }
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) return null;
-        return { id: user.id, email: user.email, name: user.name, role: user.role };
+        return { id: user.id, email: user.email, name: user.name, role: user.role, approvalStatus: user.approvalStatus };
       },
     }),
   ],
@@ -46,6 +51,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.approvalStatus = (user as any).approvalStatus;
       }
       return token;
     },
@@ -54,6 +60,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         // Cast role to any to satisfy TypeScript's Role enum requirement
         session.user.role = token.role as any;
+        (session.user as any).approvalStatus = token.approvalStatus;
       }
       return session;
     },

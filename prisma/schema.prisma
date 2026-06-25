@@ -11,6 +11,13 @@ enum Role {
   SUPER_ADMIN
   EDITOR
   AUDITOR
+  CONSULTANT
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  RESTRICTED
 }
 
 enum ProjectStatus {
@@ -21,15 +28,20 @@ enum ProjectStatus {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  username  String   @unique
-  password  String   // Managed with bcrypt hashing
-  name      String
-  role      Role     @default(EDITOR)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  logs      AuditLog[]
+  id                   String                  @id @default(uuid())
+  email                String                  @unique
+  username             String                  @unique
+  password             String                  // Managed with bcrypt hashing
+  name                 String
+  location             String?
+  role                 Role                    @default(EDITOR)
+  approvalStatus       ApprovalStatus          @default(APPROVED)
+  isDeleted            Boolean                 @default(false)
+  deletedAt            DateTime?
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+  logs                 AuditLog[]
+  prescriptionSubmissions PrescriptionSubmission[]
 
   @@map("users")
 }
@@ -279,7 +291,7 @@ model ParamedicalFeeStructureMLTTemplate {
 // Prescription Template Model
 model PrescriptionTemplate {
   id                          String                   @id @default(uuid())
-  doctorName                  String                   @default("Dr. Kazim Raza")
+  doctorName                  String                   @default("Medical Prescription")
   doctorQualifications        String                   @default("MBBS, &MP")
   pmdcRegNumber               String                   @default("798414-01-M")
   uidAmb                      String                   @default("UID/AMB 2026")
@@ -293,6 +305,8 @@ model PrescriptionTemplate {
 // Prescription Submission Model
 model PrescriptionSubmission {
   id                          String                   @id @default(uuid())
+  consultantId                String?
+  consultant                  User?                    @relation(fields: [consultantId], references: [id])
   doctorName                  String
   doctorQualifications        String
   pmdcRegNumber               String
@@ -308,9 +322,12 @@ model PrescriptionSubmission {
   // Rx & Advice
   rxContent                   String?  @db.Text
   adviceContent               String?  @db.Text
+  signature                   String?  @db.Text
   
   isRead                      Boolean                   @default(false)
   assignedNotes               String?                   @db.Text
+  isDeleted                   Boolean                   @default(false)
+  deletedAt                   DateTime?
 
   createdAt                   DateTime                 @default(now())
   updatedAt                   DateTime                 @updatedAt

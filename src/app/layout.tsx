@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, DM_Sans } from "next/font/google";
 import "./globals.css";
-import { QueryProvider } from "@/lib/query-provider";
+import { Providers } from "@/lib/providers";
 export const dynamic = "force-dynamic";
 
 
@@ -78,7 +78,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-outfit bg-canvas text-heading antialiased overflow-x-hidden">
-        <QueryProvider>{children}</QueryProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

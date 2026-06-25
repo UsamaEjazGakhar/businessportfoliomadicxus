@@ -18,6 +18,8 @@ export default function LoginPage() {
   const [signupPassword, setSignupPassword] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupName, setSignupName] = useState("");
+  const [signupLocation, setSignupLocation] = useState("");
+  const [signupIsConsultant, setSignupIsConsultant] = useState(false);
   const [signupLoading, setSignupLoading] = useState(false);
   const [signupError, setSignupError] = useState("");
 
@@ -42,18 +44,30 @@ export default function LoginPage() {
     });
 
     if (result?.error) {
-      const message = result.error === "CredentialsSignin" ? "Invalid username or password" : result.error;
+      const message = result.error === "CredentialsSignin" 
+        ? "Invalid username or password, or your account is pending approval or restricted" 
+        : result.error;
       setError(message);
     } else {
-      router.push("/admin");
+      // Get session to check role
+      const sessionRes = await fetch("/api/auth/session");
+      const sessionData = await sessionRes.json();
+      if (sessionData?.user?.role === "CONSULTANT") {
+        router.push("/consultant");
+      } else {
+        router.push("/admin");
+      }
     }
     setLoading(false);
   };
+
+  const [signupSuccess, setSignupSuccess] = useState("");
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setSignupLoading(true);
     setSignupError("");
+    setSignupSuccess("");
 
     try {
       const res = await fetch("/api/auth/register", {
@@ -64,6 +78,8 @@ export default function LoginPage() {
           password: signupPassword,
           email: signupEmail,
           name: signupName,
+          location: signupLocation,
+          isConsultant: signupIsConsultant,
         }),
       });
 
@@ -75,20 +91,14 @@ export default function LoginPage() {
         return;
       }
 
-      // After account creation, login automatically.
-      const result = await signIn("credentials", {
-        username: signupUsername,
-        password: signupPassword,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setSignupError(result.error);
-        setSignupLoading(false);
-        return;
-      }
-
-      router.push("/");
+      setSignupSuccess("Your account has been created successfully! It's pending approval from the admin.");
+      setSignupLoading(false);
+      // Reset signup form
+      setSignupUsername("");
+      setSignupPassword("");
+      setSignupEmail("");
+      setSignupName("");
+      setSignupLocation("");
     } catch {
       setSignupError("Registration failed");
       setSignupLoading(false);
@@ -386,6 +396,21 @@ export default function LoginPage() {
                 {signupError}
               </div>
             )}
+            {signupSuccess && (
+              <div
+                style={{
+                  background: "rgba(34,197,94,.15)",
+                  border: "1px solid rgba(34,197,94,.3)",
+                  borderRadius: "10px",
+                  padding: "12px 16px",
+                  marginBottom: "20px",
+                  fontSize: "13px",
+                  color: "#4ade80",
+                }}
+              >
+                {signupSuccess}
+              </div>
+            )}
 
             <div style={{ marginBottom: "20px" }}>
               <label
@@ -483,6 +508,65 @@ export default function LoginPage() {
               />
             </div>
 
+            <div style={{ marginBottom: "20px" }}>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  color: "rgba(255,255,255,.6)",
+                  marginBottom: "8px",
+                }}
+              >
+                Location
+              </label>
+              <input
+                type="text"
+                value={signupLocation}
+                onChange={(e) => setSignupLocation(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  background: "rgba(255,255,255,.06)",
+                  border: "1px solid rgba(255,255,255,.12)",
+                  borderRadius: "10px",
+                  color: "#fff",
+                  fontSize: "14px",
+                  outline: "none",
+                  transition: "border-color .2s",
+                }}
+                placeholder="Enter your location"
+              />
+            </div>
+
+            <div style={{ marginBottom: "20px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <input
+                  type="checkbox"
+                  id="consultantCheck"
+                  checked={signupIsConsultant}
+                  onChange={(e) => setSignupIsConsultant(e.target.checked)}
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    cursor: "pointer",
+                    accentColor: "#14B8A6",
+                  }}
+                />
+                <label
+                  htmlFor="consultantCheck"
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "rgba(255,255,255,.8)",
+                    cursor: "pointer",
+                  }}
+                >
+                  Register as Consultant
+                </label>
+              </div>
+            </div>
+
             <div style={{ marginBottom: "28px" }}>
               <label
                 style={{
@@ -495,24 +579,24 @@ export default function LoginPage() {
               >
                 Password
               </label>
-              <input
-                type="password"
-                value={signupPassword}
-                onChange={(e) => setSignupPassword(e.target.value)}
-                required
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  background: "rgba(255,255,255,.06)",
-                  border: "1px solid rgba(255,255,255,.12)",
-                  borderRadius: "10px",
-                  color: "#fff",
-                  fontSize: "14px",
-                  outline: "none",
-                  transition: "border-color .2s",
-                }}
-                placeholder="Create a password"
-              />
+                <input
+                  type="password"
+                  value={signupPassword}
+                  onChange={(e) => setSignupPassword(e.target.value)}
+                  required
+                  style={{
+                    width: "100%",
+                    padding: "12px 16px",
+                    background: "rgba(255,255,255,.06)",
+                    border: "1px solid rgba(255,255,255,.12)",
+                    borderRadius: "10px",
+                    color: "#fff",
+                    fontSize: "14px",
+                    outline: "none",
+                    transition: "border-color .2s",
+                  }}
+                  placeholder="Create a password"
+                />
             </div>
 
             <button

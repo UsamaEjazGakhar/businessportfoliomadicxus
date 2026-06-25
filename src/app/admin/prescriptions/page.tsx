@@ -2,6 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useToast } from "@/app/admin/layout";
+import PrescriptionView from "@/components/PrescriptionView";
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 
 interface PrescriptionSubmission {
   id: string;
@@ -16,27 +23,31 @@ interface PrescriptionSubmission {
   date?: string;
   rxContent?: string;
   adviceContent?: string;
+  signature?: string;
   isRead: boolean;
   assignedNotes?: string;
   createdAt: string;
+  isDeleted: boolean;
+  consultant?: User;
 }
 
 export default function PrescriptionsAdmin() {
   const [submissions, setSubmissions] = useState<PrescriptionSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSubmission, setSelectedSubmission] = useState<PrescriptionSubmission | null>(null);
+  const [viewDeleted, setViewDeleted] = useState(false);
   const { showToast, confirmDelete } = useToast();
   const [notes, setNotes] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
 
   useEffect(() => {
     fetchSubmissions();
-  }, []);
+  }, [viewDeleted]);
 
   const fetchSubmissions = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/prescription-submissions");
+      const res = await fetch(`/api/prescription-submissions?deleted=${viewDeleted}`);
       const data = await res.json();
       if (data.success) {
         setSubmissions(data.data);
@@ -93,14 +104,16 @@ export default function PrescriptionsAdmin() {
     }
   };
 
-  const handleDelete = (id: string) => {
-    confirmDelete("Are you sure you want to delete this prescription submission?", async () => {
+  const handleDelete = (id: string, isDeleted: boolean) => {
+    confirmDelete(`Are you sure you want to ${isDeleted ? "restore" : "delete"} this prescription submission?`, async () => {
       try {
         const res = await fetch(`/api/prescription-submissions/${id}`, {
           method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ restore: isDeleted }),
         });
         if (res.ok) {
-          showToast("Submission deleted successfully!", "success");
+          showToast(`Submission ${isDeleted ? "restored" : "deleted"} successfully!`, "success");
           await fetchSubmissions();
           if (selectedSubmission?.id === id) {
             setSelectedSubmission(null);
@@ -108,20 +121,54 @@ export default function PrescriptionsAdmin() {
           }
         }
       } catch (error) {
-        showToast("Failed to delete submission", "error");
+        showToast(`Failed to ${isDeleted ? "restore" : "delete"} submission`, "error");
       }
     });
   };
 
   return (
     <div style={{ height: "calc(100vh - 120px)", display: "flex", flexDirection: "column" }}>
-      <div style={{ marginBottom: "24px" }}>
-        <h1 style={{ fontSize: "28px", fontWeight: 800, color: "#0F172A", letterSpacing: "-1px", marginBottom: "4px" }}>
-          Prescription Submissions
-        </h1>
-        <p style={{ fontSize: "14px", color: "#94A3B8" }}>
-          Review and manage all prescription submissions
-        </p>
+      <div style={{ marginBottom: "24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <h1 style={{ fontSize: "28px", fontWeight: 800, color: "#0F172A", letterSpacing: "-1px", marginBottom: "4px" }}>
+            Prescription Submissions
+          </h1>
+          <p style={{ fontSize: "14px", color: "#94A3B8" }}>
+            Review and manage all prescription submissions
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            onClick={() => setViewDeleted(false)}
+            style={{
+              padding: "10px 16px",
+              background: !viewDeleted ? "linear-gradient(135deg,#0F4C81,#14B8A6)" : "#fff",
+              color: !viewDeleted ? "#fff" : "#0F172A",
+              border: !viewDeleted ? "none" : "1px solid #E2E8F0",
+              borderRadius: "10px",
+              fontSize: "13px",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Active Prescriptions
+          </button>
+          <button
+            onClick={() => setViewDeleted(true)}
+            style={{
+              padding: "10px 16px",
+              background: viewDeleted ? "linear-gradient(135deg,#0F4C81,#14B8A6)" : "#fff",
+              color: viewDeleted ? "#fff" : "#0F172A",
+              border: viewDeleted ? "none" : "1px solid #E2E8F0",
+              borderRadius: "10px",
+              fontSize: "13px",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Deleted Prescriptions
+          </button>
+        </div>
       </div>
 
       {loading && submissions.length === 0 ? (
@@ -154,10 +201,15 @@ export default function PrescriptionsAdmin() {
                       <span style={{ fontSize: "14px", fontWeight: submission.isRead ? 600 : 800, color: "#0F172A" }}>
                         {submission.patientName || "Unnamed Patient"}
                       </span>
-                      {!submission.isRead && (
+                      {!submission.isRead && !viewDeleted && (
                         <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#F59E0B" }} />
                       )}
                     </div>
+                    {submission.consultant && (
+                      <div style={{ fontSize: "12px", color: "#64748B", marginBottom: "2px" }}>
+                        Consultant: <strong>{submission.consultant.name}</strong>
+                      </div>
+                    )}
                     <div style={{ fontSize: "13px", fontWeight: submission.isRead ? 500 : 700, color: "#475569", marginBottom: "4px" }}>
                       {submission.date || "No Date"}
                     </div>
@@ -169,7 +221,7 @@ export default function PrescriptionsAdmin() {
               })}
               {submissions.length === 0 && (
                 <div style={{ padding: "32px", textAlign: "center", color: "#94A3B8", fontSize: "14px" }}>
-                  No submissions yet
+                  No {viewDeleted ? "deleted" : ""} submissions yet
                 </div>
               )}
             </div>
@@ -197,82 +249,57 @@ export default function PrescriptionsAdmin() {
                       Received: {new Date(selectedSubmission.createdAt).toLocaleString()}
                     </span>
                     <button
-                      onClick={() => handleDelete(selectedSubmission.id)}
+                      onClick={() => handleDelete(selectedSubmission.id, viewDeleted)}
                       style={{
-                        background: "rgba(239,68,68,0.08)", color: "#EF4444", border: "none",
-                        borderRadius: "8px", padding: "6px 12px", fontSize: "12px", fontWeight: 600,
+                        background: viewDeleted ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)",
+                        color: viewDeleted ? "#22c55e" : "#EF4444",
+                        border: "none",
+                        borderRadius: "8px",
+                        padding: "6px 12px",
+                        fontSize: "12px",
+                        fontWeight: 600,
                         cursor: "pointer"
                       }}
-                    >Delete</button>
+                    >
+                      {viewDeleted ? "Restore" : "Delete"}
+                    </button>
                   </div>
                 </div>
 
-                <div style={{
-                  background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "12px",
-                  padding: "20px", fontSize: "14px", color: "#334155", lineHeight: 1.7,
-                  whiteSpace: "pre-line", minHeight: "150px", marginBottom: "24px"
-                }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px" }}>
-                    <div>
-                      <label style={{ fontSize: "12px", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.5px" }}>Patient Name</label>
-                      <p style={{ margin: "4px 0 0 0", color: "#1E293B" }}>{selectedSubmission.patientName || "-"}</p>
-                    </div>
-                    <div>
-                      <label style={{ fontSize: "12px", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.5px" }}>Patient Age</label>
-                      <p style={{ margin: "4px 0 0 0", color: "#1E293B" }}>{selectedSubmission.patientAge || "-"}</p>
-                    </div>
-                    <div>
-                      <label style={{ fontSize: "12px", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.5px" }}>Patient Gender</label>
-                      <p style={{ margin: "4px 0 0 0", color: "#1E293B" }}>{selectedSubmission.patientGender || "-"}</p>
-                    </div>
-                    <div>
-                      <label style={{ fontSize: "12px", fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.5px" }}>Date</label>
-                      <p style={{ margin: "4px 0 0 0", color: "#1E293B" }}>{selectedSubmission.date || "-"}</p>
-                    </div>
-                  </div>
-
-                  {selectedSubmission.rxContent && (
-                    <div style={{ marginBottom: "20px" }}>
-                      <h3 style={{ fontSize: "14px", fontWeight: 700, color: "#0F172A", marginBottom: "8px" }}>Rx</h3>
-                      <p style={{ margin: 0, whiteSpace: "pre-line", color: "#1E293B" }}>{selectedSubmission.rxContent}</p>
-                    </div>
-                  )}
-                  {selectedSubmission.adviceContent && (
-                    <div style={{ marginBottom: "20px" }}>
-                      <h3 style={{ fontSize: "14px", fontWeight: 700, color: "#0F172A", marginBottom: "8px" }}>Advice</h3>
-                      <p style={{ margin: 0, whiteSpace: "pre-line", color: "#1E293B" }}>{selectedSubmission.adviceContent}</p>
-                    </div>
-                  )}
+                <div style={{ marginBottom: "24px" }}>
+                  <PrescriptionView data={selectedSubmission} />
                 </div>
               </div>
 
               {/* CRM / Administration Notes Section */}
-              <div style={{ borderTop: "1px solid #E2E8F0", paddingTop: "24px" }}>
-                <h3 style={{ fontSize: "14px", fontWeight: 700, color: "#0F172A", marginBottom: "12px" }}>
-                  CRM Follow-up Notes
-                </h3>
+              {!viewDeleted && (
+                <div style={{ borderTop: "1px solid #E2E8F0", paddingTop: "24px" }}>
+                  <h3 style={{ fontSize: "14px", fontWeight: 700, color: "#0F172A", marginBottom: "12px" }}>
+                    CRM Follow-up Notes
+                  </h3>
 
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Record follow-up logs, calls made, or status details..."
-                  style={{
-                    width: "100%", padding: "12px", border: "1px solid #E2E8F0", borderRadius: "8px",
-                    minHeight: "100px", fontSize: "13px", fontFamily: "inherit", marginBottom: "12px"
-                  }}
-                />
-                <button
-                  onClick={handleSaveNotes}
-                  disabled={savingNotes}
-                  style={{
-                    background: "#0F4C81", color: "#fff", border: "none", borderRadius: "8px",
-                    padding: "8px 18px", fontWeight: 600, fontSize: "13px", cursor: savingNotes ? "not-allowed" : "pointer",
-                    opacity: savingNotes ? 0.7 : 1
-                  }}
-                >
-                  {savingNotes ? "Saving..." : "Save Notes"}
-                </button>
-              </div>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Record follow-up logs, calls made, or status details..."
+                    style={{
+                      width: "100%", padding: "12px", border: "1px solid #E2E8F0", borderRadius: "8px",
+                      minHeight: "100px", fontSize: "13px", fontFamily: "inherit", marginBottom: "12px"
+                    }}
+                  />
+                  <button
+                    onClick={handleSaveNotes}
+                    disabled={savingNotes}
+                    style={{
+                      background: "#0F4C81", color: "#fff", border: "none", borderRadius: "8px",
+                      padding: "8px 18px", fontWeight: 600, fontSize: "13px", cursor: savingNotes ? "not-allowed" : "pointer",
+                      opacity: savingNotes ? 0.7 : 1
+                    }}
+                  >
+                    {savingNotes ? "Saving..." : "Save Notes"}
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <div style={{

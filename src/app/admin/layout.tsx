@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { icon: "📨", label: "Contact Leads", href: "/admin/inquiries" },
   { icon: "📄", label: "Admission Forms", href: "/admin/admission-forms" },
   { icon: "📝", label: "Prescriptions", href: "/admin/prescriptions" },
+  { icon: "👨‍⚕️", label: "Consultants", href: "/admin/consultants" },
   { icon: "💰", label: "Nursing Fees", href: "/admin/nursing-fee-structures" },
   { icon: "🔬", label: "Paramedical Lab Fees", href: "/admin/paramedical-fee-structure-lab" },
   { icon: "🧪", label: "Paramedical MLT Fees", href: "/admin/paramedical-fee-structure-mlt" },

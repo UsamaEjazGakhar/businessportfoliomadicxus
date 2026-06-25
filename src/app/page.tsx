@@ -13,19 +13,17 @@ import CtaSection from "@/components/main/cta-section";
 import Footer from "@/components/main/footer";
 
 import AdmissionForm from "./admissionsection/AdmissionForm";
-import DrKazimRazaPrescription from "./admissionsection/DrKazimRazaPrescription";
 import NursingFeeStructure from "./admissionsection/NursingFeeStructure";
 import ParamedicalFeeStructureLab from "./admissionsection/ParamedicalFeeStructureLab";
 import ParamedicalFeeStructureMLT from "./admissionsection/ParamedicalFeeStructureMLT";
 
-type ViewState = 'main' | 'forms-list' | 'admission' | 'prescription' | 'nursing-fee' | 'paramedical-lab-fee' | 'paramedical-mlt-fee';
+type ViewState = 'main' | 'forms-list' | 'admission' | 'nursing-fee' | 'paramedical-lab-fee' | 'paramedical-mlt-fee';
 
 export default function HomePage() {
   const [view, setView] = useState<ViewState>('main');
 
   const forms = [
     { id: 'admission' as const, label: 'Admission Form', component: AdmissionForm },
-    { id: 'prescription' as const, label: 'Dr Kazim Raza Prescription', component: DrKazimRazaPrescription },
     { id: 'nursing-fee' as const, label: 'Nursing Fee Structure', component: NursingFeeStructure },
     { id: 'paramedical-lab-fee' as const, label: 'Paramedical Lab Fee Structure', component: ParamedicalFeeStructureLab },
     { id: 'paramedical-mlt-fee' as const, label: 'Paramedical MLT Fee Structure', component: ParamedicalFeeStructureMLT },

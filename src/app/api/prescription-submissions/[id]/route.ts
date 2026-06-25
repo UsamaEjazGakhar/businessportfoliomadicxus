@@ -24,7 +24,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params;
     const session = await getServerSession(authOptions);
-    if (!session || !["SUPER_ADMIN", "EDITOR", "AUDITOR"].includes(session.user.role)) {
+    if (!session || !["SUPER_ADMIN", "EDITOR", "AUDITOR", "CONSULTANT"].includes(session.user.role)) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
     const prescription = await prisma.prescriptionSubmission.findUnique({
@@ -80,11 +80,17 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
-    await prisma.prescriptionSubmission.delete({
+    const { restore } = await req.json();
+
+    const updated = await prisma.prescriptionSubmission.update({
       where: { id },
+      data: {
+        isDeleted: !restore,
+        deletedAt: restore ? null : new Date(),
+      },
     });
 
-    return NextResponse.json({ success: true, message: "Prescription deleted" }, { status: 200 });
+    return NextResponse.json({ success: true, data: updated }, { status: 200 });
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json(
@@ -93,3 +99,4 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     );
   }
 }
+
