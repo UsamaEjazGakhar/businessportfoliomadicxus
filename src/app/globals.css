@@ -253,6 +253,26 @@ body {
   }
 }
 
+/* ── STATS RESPONSIVE UTILITIES ── */
+.stat-pill:hover {
+  background: #F8FAFC !important;
+}
+@media (max-width: 900px) {
+  .stats-container {
+    flex-wrap: wrap;
+  }
+  .stat-pill {
+    flex: 0 0 50%;
+    min-width: 50%;
+  }
+}
+@media (max-width: 600px) {
+  .stat-pill {
+    flex: 0 0 100%;
+    min-width: 100%;
+  }
+}
+
 /* ── DIVISIONS SECTION ── */
 .divisions-section {
   padding: 96px 64px;
@@ -307,6 +327,27 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 24px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 900px) {
+  .divisions-section {
+    padding: 64px 24px;
+  }
+  .divisions-title {
+    font-size: clamp(24px, 5vw, 36px);
+  }
+  .divisions-subtitle {
+    font-size: 10px;
+  }
+  .divisions-text {
+    font-size: 14px;
+  }
+}
+@media (max-width: 600px) {
+  .divisions-grid {
+    grid-template-columns: 1fr;
+  }
 }
 .divisions-card {
   background: #fff;

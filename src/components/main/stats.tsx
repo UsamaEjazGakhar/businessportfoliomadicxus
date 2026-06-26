@@ -8,7 +8,7 @@ const STATS = [
 
 export default function Stats() {
   return (
-    <div style={{
+    <div className="stats-container" style={{
       background: "#fff",
       borderBottom: "1px solid #E2E8F0",
       display: "flex",
