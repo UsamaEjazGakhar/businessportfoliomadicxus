@@ -63,6 +63,7 @@ async function main() {
       icon: "🌍",
       iconColor: "icon-amber",
       sortOrder: 3,
+      // @ts-ignore
       targetUrl: "https://study-abroad-wg4o.vercel.app/",
     },
   });
@@ -75,6 +76,7 @@ async function main() {
       icon: "💻",
       iconColor: "icon-purple",
       sortOrder: 4,
+      // @ts-ignore
       targetUrl: "https://lightcoral-chimpanzee-457948.hostingersite.com/frontend/login.php",
     },
   });
