@@ -15,9 +15,13 @@ export async function GET(req: NextRequest) {
     const deleted = searchParams.get('deleted') === 'true';
     
     let prescriptions;
-    if (consultantId && session.user.role !== Role.CONSULTANT) {
+    if (session.user.role !== Role.CONSULTANT) {
+      const whereClause: any = { isDeleted: deleted };
+      if (consultantId) {
+        whereClause.consultantId = consultantId;
+      }
       prescriptions = await prisma.prescriptionSubmission.findMany({
-        where: { consultantId, isDeleted: deleted },
+        where: whereClause,
         orderBy: { createdAt: "desc" },
         include: { consultant: true },
       });

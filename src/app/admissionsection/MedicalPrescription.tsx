@@ -60,7 +60,7 @@ export default function MedicalPrescription({ onGoBack }: MedicalPrescriptionPro
 
   useEffect(() => {
     if (session?.user?.name) {
-      setFormData((prev) => ({ ...prev, doctorName: session.user.name }));
+      setFormData((prev) => ({ ...prev, doctorName: session.user.name || "" }));
     }
     const now = new Date();
     const dateStr = now.toLocaleDateString("en-GB");
@@ -211,13 +211,14 @@ export default function MedicalPrescription({ onGoBack }: MedicalPrescriptionPro
     const inputs = formRef.current.querySelectorAll('input, textarea');
     const replacements: { element: HTMLElement; replacement: HTMLElement }[] = [];
 
-    inputs.forEach(input => {
+    inputs.forEach(el => {
+      const input = el as HTMLInputElement | HTMLTextAreaElement;
       const tagName = input.tagName.toLowerCase();
       let replacement: HTMLElement;
 
       if (tagName === 'textarea') {
         replacement = document.createElement('div');
-        replacement.textContent = (input as HTMLTextAreaElement).value;
+        replacement.textContent = input.value;
         replacement.style.width = input.style.width || '100%';
         replacement.style.minHeight = input.style.minHeight || '120px';
         replacement.style.border = input.style.border || '';
@@ -229,7 +230,7 @@ export default function MedicalPrescription({ onGoBack }: MedicalPrescriptionPro
         replacement.style.boxSizing = 'border-box';
       } else {
         replacement = document.createElement('span');
-        replacement.textContent = (input as HTMLInputElement).value;
+        replacement.textContent = input.value;
         // Copy input styles
         replacement.style.fontSize = input.style.fontSize || '';
         replacement.style.fontWeight = input.style.fontWeight || '';
@@ -241,7 +242,7 @@ export default function MedicalPrescription({ onGoBack }: MedicalPrescriptionPro
 
       // Replace the input with the span/div
       input.parentNode?.replaceChild(replacement, input);
-      replacements.push({ element: input as HTMLElement, replacement });
+      replacements.push({ element: input, replacement });
     });
 
     try {

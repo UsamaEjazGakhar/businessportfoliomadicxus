@@ -408,7 +408,7 @@ export default function PrescriptionView({ data: initialData, readOnly = false }
               </div>
               <div class="vital-item">
                 <span class="label-short">SpO2:</span>
-                <span class="field-value">${formData.spO2}</span>
+                <span class="field-value">${formData.spo2}</span>
               </div>
               <div class="vital-item">
                 <span class="label-short">BSR:</span>

@@ -1,6 +1,15 @@
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminDashboard() {
+  const measure = async <T,>(name: string, fn: () => Promise<T>): Promise<T> => {
+    const start = Date.now();
+    try {
+      return await fn();
+    } finally {
+      console.log(`[DB Query] ${name} took ${Date.now() - start}ms`);
+    }
+  };
+
   const [
     projectCount,
     divisionCount,
@@ -9,19 +18,19 @@ export default async function AdminDashboard() {
     recentInquiries,
     topProjects,
   ] = await Promise.all([
-    prisma.project.count(),
-    prisma.businessDivision.count(),
-    prisma.contactInquiry.count(),
-    prisma.contactInquiry.count({ where: { isRead: false } }),
-    prisma.contactInquiry.findMany({
+    measure("projectCount", () => prisma.project.count()),
+    measure("divisionCount", () => prisma.businessDivision.count()),
+    measure("inquiryCount", () => prisma.contactInquiry.count()),
+    measure("unreadCount", () => prisma.contactInquiry.count({ where: { isRead: false } })),
+    measure("recentInquiries", () => prisma.contactInquiry.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,
-    }),
-    prisma.project.findMany({
+    })),
+    measure("topProjects", () => prisma.project.findMany({
       orderBy: { clickCount: "desc" },
       take: 5,
       select: { title: true, clickCount: true, status: true },
-    }),
+    })),
   ]);
 
   const stats = [
