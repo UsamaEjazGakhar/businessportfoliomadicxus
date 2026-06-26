@@ -1,7 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -50,10 +50,24 @@ export default function LoginPage() {
       setError(message);
       setLoading(false);
     } else {
-      // After successful sign‑in, clear loading state first
+      // After successful sign‑in, keep loading while determining role
+      setLoading(true);
+      // Poll the session until the role is available (max 20 attempts)
+      let attempts = 0;
+      let role = null;
+      while (attempts < 20) {
+        const sess = await getSession();
+        role = (sess?.user as any)?.role;
+        if (role) break;
+        attempts++;
+        await new Promise((res) => setTimeout(res, 300));
+      }
       setLoading(false);
-      // Directly navigate to consultant dashboard (adjust as needed)
-      router.push("/consultant");
+      if (role === "ADMIN" || role === "admin") {
+        router.replace("/admin");
+      } else {
+        router.replace("/consultant");
+      }
     }
   };
 

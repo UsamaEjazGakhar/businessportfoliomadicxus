@@ -27,6 +27,11 @@ export default function ConsultantLayout({ children }: { children: ReactNode }) 
     );
   }
 
+  // If authenticated but not a consultant, don't render layout (redirect handled in useEffect)
+  if (status === "authenticated" && (session?.user as any).role !== Role.CONSULTANT) {
+    return null;
+  }
+
   const navItems = [
     {
       label: "Dashboard",

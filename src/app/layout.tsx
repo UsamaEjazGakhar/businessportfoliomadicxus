@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { Outfit, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/lib/providers";
+
+import SessionLoader from "@/components/SessionLoader";
+
 export const dynamic = "force-dynamic";
-
-
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -69,7 +70,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${outfit.variable} ${dmSans.variable} scroll-smooth`}>
+    <html lang="en" className={`${outfit.variable} ${dmSans.variable} scroll-smooth`} >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <script
@@ -78,7 +79,11 @@ export default function RootLayout({
         />
       </head>
       <body className="font-outfit bg-canvas text-heading antialiased overflow-x-hidden">
-        <Providers>{children}</Providers>
+        <Providers>
+
+          <SessionLoader />
+          {children}
+        </Providers>
       </body>
     </html>
   );
