@@ -222,8 +222,39 @@ body {
   background: rgba(255,255,255,0.25);
 }
 
-.admin-sidebar.open {
-  transform: translateX(0);
+/* ── ADMIN SIDEBAR RESPONSIVE ── */
+@media (max-width: 900px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+    width: 260px;
+    height: 100vh;
+  }
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+  .admin-main {
+    margin-left: 0 !important;
+  }
+}
+
+/* ── CONSULTANT SIDEBAR RESPONSIVE ── */
+.consultant-sidebar {
+  width: 260px;
+  transition: transform 0.3s ease;
+}
+@media (max-width: 900px) {
+  .consultant-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    z-index: 1000;
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  }
+  .consultant-sidebar.open {
+    transform: translateX(0);
+  }
 }
 
 .admin-main {

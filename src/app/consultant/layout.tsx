@@ -52,8 +52,7 @@ export default function ConsultantLayout({ children }: { children: ReactNode }) 
       background: "#f8fafc"
     }}>
       {/* Sidebar */}
-      <aside style={{
-        width: isSidebarOpen ? "260px" : "80px",
+      <aside className={`consultant-sidebar ${isSidebarOpen ? 'open' : ''}`} style={{
         background: "linear-gradient(180deg, #0f172a 0%, #1e293b 100%)",
         color: "white",
         padding: "24px 0",
