@@ -235,6 +235,17 @@ body {
   .admin-main {
     margin-left: 0 !important;
   }
+  /* ── ADMIN NAV RESPONSIVE ── */
+  .admin-sidebar nav a {
+    font-size: 16px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .admin-sidebar nav a span {
+    font-size: 18px;
+  }
 }
 
 /* ── CONSULTANT SIDEBAR RESPONSIVE ── */
