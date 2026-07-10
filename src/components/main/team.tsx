@@ -7,16 +7,6 @@ export default function Team() {
 
   const teamMembers = [
     {
-      name: "Maqsood Gul",
-      role: "Director - Madicxus Group",
-      bio: "Leads management, marketing, and business development. Specializes in the Study Abroad Next Project, driving its growth and partnerships across educational institutions worldwide. Partner in both Lab Management and Hospital Management System projects, serving as Product Owner for these initiatives.",
-      projects: ["Study Abroad Next Project", "Lab Management System", "Hospital Management System"],
-      showProjects: true,
-      image: "/teamphotos/maqsoodpic.jpeg",
-      color: "#0F4C81",
-      objectPosition: "top",
-    },
-    {
       name: "Usama Ejaz",
       role: "IT Head - Madicxus Group",
       bio: "Oversees all IT operations, project development, and technical strategy. Partner in both Lab Management and Hospital Management System projects, serving as Product Owner for these initiatives.",
@@ -24,6 +14,16 @@ export default function Team() {
       showProjects: true,
       image: "/teamphotos/usamapic.jpeg",
       color: "#14B8A6",
+      objectPosition: "top",
+    },
+    {
+      name: "Maqsood Gul",
+      role: "Director - Madicxus Group",
+      bio: "Leads management, marketing, and business development. Specializes in the Study Abroad Next Project, driving its growth and partnerships across educational institutions worldwide. Partner in both Lab Management and Hospital Management System projects, serving as Product Owner for these initiatives.",
+      projects: ["Study Abroad Next Project", "Lab Management System", "Hospital Management System"],
+      showProjects: true,
+      image: "/teamphotos/maqsoodpic.jpeg",
+      color: "#0F4C81",
       objectPosition: "top",
     },
     {
