@@ -27,7 +27,7 @@ export default function Team() {
       objectPosition: "top",
     },
     {
-      name: "Asst. Prof. Dr. Aaminah Hanif",
+      name: "Asst. Prof. Dr. Aaminah",
       role: "MBBS, M.Phil Histopathology",
       bio: "Brings specialized expertise in histopathology, contributing to accurate diagnostic assessment and academic excellence within the Madicxus Group's healthcare initiatives.",
       projects: [],
