@@ -49,7 +49,7 @@
         <div className="animate-fade-up" style={{
           fontSize: "clamp(20px,2.5vw,32px)", fontWeight: 800, color: "#14B8A6", letterSpacing: "8px", marginBottom: "16px", textTransform: "uppercase"
         }}>
-          MADICXUS GROUP
+          MEDICXUS GROUP
         </div>
         <h1 className="animate-fade-up" style={{
           fontSize: "clamp(42px,5.2vw,72px)", fontWeight: 900,

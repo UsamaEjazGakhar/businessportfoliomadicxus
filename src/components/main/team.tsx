@@ -8,7 +8,7 @@ export default function Team() {
   const teamMembers = [
     {
       name: "Usama Ejaz",
-      role: "IT Head - Madicxus Group",
+      role: "IT Head - Medicxus Group",
       bio: "Oversees all IT operations, project development, and technical strategy. Partner in both Lab Management and Hospital Management System projects, serving as Product Owner for these initiatives.",
       projects: ["Lab Management System", "Hospital Management System"],
       showProjects: true,
@@ -18,7 +18,7 @@ export default function Team() {
     },
     {
       name: "Maqsood Gul",
-      role: "Director - Madicxus Group",
+      role: "Director - Medicxus Group",
       bio: "Leads management, marketing, and business development. Specializes in the Study Abroad Next Project, driving its growth and partnerships across educational institutions worldwide. Partner in both Lab Management and Hospital Management System projects, serving as Product Owner for these initiatives.",
       projects: ["Study Abroad Next Project", "Lab Management System", "Hospital Management System"],
       showProjects: true,
@@ -29,7 +29,7 @@ export default function Team() {
     {
       name: "Asst. Prof. Dr. Aaminah",
       role: "MBBS, M.Phil Histopathology",
-      bio: "Brings specialized expertise in histopathology, contributing to accurate diagnostic assessment and academic excellence within the Madicxus Group's healthcare initiatives.",
+      bio: "Brings specialized expertise in histopathology, contributing to accurate diagnostic assessment and academic excellence within the Medicxus Group's healthcare initiatives.",
       projects: [],
       showProjects: false,
       image: "/teamphotos/image1.png",
@@ -39,7 +39,7 @@ export default function Team() {
     {
       name: "Dr. Ayesha Ellahi",
       role: "Consultant Hematologist",
-      bio: "MBBS, M.Phil, PhD Hematology. Provides expert consultation in hematology, supporting patient diagnosis and treatment planning across the Madicxus Group's healthcare network.",
+      bio: "MBBS, M.Phil, PhD Hematology. Provides expert consultation in hematology, supporting patient diagnosis and treatment planning across the Medicxus Group's healthcare network.",
       projects: [],
       showProjects: false,
       image: "/teamphotos/image2.png",
@@ -49,7 +49,7 @@ export default function Team() {
     {
       name: "Dr. Asim Munir",
       role: "Microbiologist",
-      bio: "M.Phil, PhD Microbiology. Provides expert microbiological analysis and research support, contributing to the diagnostic accuracy of the Madicxus Group's laboratory services.",
+      bio: "M.Phil., Ph.D., Postdoctoral Researcher (Microbiology). Provides expert microbiological analysis and research support, contributing to the diagnostic accuracy and scientific excellence of the Medicxus Group's laboratory services. Expertise includes antimicrobial resistance (AMR), microbial genomics, molecular epidemiology, plasmid biology, and One Health research.",
       projects: [],
       showProjects: false,
       image: "/teamphotos/image8.png",
@@ -59,7 +59,7 @@ export default function Team() {
     {
       name: "Muhammad Luqman",
       role: "PhD Molecular Biology",
-      bio: "Brings advanced research expertise in molecular biology, supporting scientific and diagnostic initiatives across the Madicxus Group.",
+      bio: "Brings advanced research expertise in molecular biology, supporting scientific and diagnostic initiatives across the Medicxus Group.",
       projects: [],
       showProjects: false,
       image: "/teamphotos/image7.png",
@@ -69,7 +69,7 @@ export default function Team() {
     {
       name: "Muhammad Tanveer",
       role: "MSc Microbiology",
-      bio: "Contributes specialized microbiology expertise, supporting laboratory operations and diagnostic accuracy within the Madicxus Group's healthcare projects.",
+      bio: "Contributes specialized microbiology expertise, supporting laboratory operations and diagnostic accuracy within the Medicxus Group's healthcare projects.",
       projects: [],
       showProjects: false,
       image: "/teamphotos/image3.png",
@@ -79,7 +79,7 @@ export default function Team() {
     {
       name: "Dr. Hadayat-Ullah",
       role: "Cardiologist",
-      bio: "MBBS, FCPS Cardiology. Delivers specialized cardiac care and consultation, strengthening the clinical expertise of the Madicxus Group's healthcare team.",
+      bio: "MBBS, FCPS Cardiology. Delivers specialized cardiac care and consultation, strengthening the clinical expertise of the Medicxus Group's healthcare team.",
       projects: [],
       showProjects: false,
       image: "/teamphotos/image6.png",
@@ -89,7 +89,7 @@ export default function Team() {
     {
       name: "Dr. Kazim Raza",
       role: "Head of Patient Care Department",
-      bio: "MBBS. Leads the Patient Care Department, ensuring quality service delivery and patient satisfaction across the Madicxus Group's healthcare facilities.",
+      bio: "MBBS. Leads the Patient Care Department, ensuring quality service delivery and patient satisfaction across the Medicxus Group's healthcare facilities.",
       projects: [],
       showProjects: false,
       image: "/teamphotos/image4.png",
@@ -99,7 +99,7 @@ export default function Team() {
     {
       name: "Dr. Ahtesham",
       role: "Physiotherapist",
-      bio: "DPT. Provides expert physiotherapy services, helping patients recover mobility and improve quality of life within the Madicxus Group's healthcare network.",
+      bio: "DPT. Provides expert physiotherapy services, helping patients recover mobility and improve quality of life within the Medicxus Group's healthcare network.",
       projects: [],
       showProjects: false,
       image: "/teamphotos/image5.png",
@@ -307,7 +307,7 @@ export default function Team() {
           Meet Our Leadership
         </h2>
         <p style={{ fontSize: "13px", color: "#64748B", lineHeight: 1.6, maxWidth: "420px" }}>
-          Dedicated professionals driving innovation and excellence across all Madicxus Group initiatives.
+          Dedicated professionals driving innovation and excellence across all Medicxus Group initiatives.
         </p>
       </div>
 

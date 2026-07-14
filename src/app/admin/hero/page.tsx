@@ -27,7 +27,7 @@ export default function HeroAdmin() {
       if (data.success) {
         setHeroBadge(data.data.heroBadge || "Trusted Healthcare Technology Group — medicxus.com");
         setHeroTitle(data.data.heroTitle || "Empowering Healthcare. Transforming Lives.");
-        setHeroSubtitle(data.data.heroSubtitle || "Medicxus Group bridges world-class health education, advanced diagnostics, international MBBS consultancy and cutting-edge healthcare IT — all under one trusted roof.");
+        setHeroSubtitle(data.data.heroSubtitle || "Medicxus Group bridges world-class health education, advanced diagnostics, International Medical and Health care education consultancy.");
         setHeroPrimaryCta(data.data.heroPrimaryCta || "Explore Our Divisions");
         setHeroSecondaryCta(data.data.heroSecondaryCta || "Learn About Us");
       }
