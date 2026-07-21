@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { SessionProvider } from "next-auth/react";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 const NAV_ITEMS = [
@@ -455,9 +454,5 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <SessionProvider>
-      <AdminLayoutInner>{children}</AdminLayoutInner>
-    </SessionProvider>
-  );
+  return <AdminLayoutInner>{children}</AdminLayoutInner>;
 }

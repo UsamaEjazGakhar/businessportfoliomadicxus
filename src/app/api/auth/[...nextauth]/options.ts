@@ -14,13 +14,21 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
     maxAge: 8 * 60 * 60, // 8 hours
-    ...(process.env.NODE_ENV === "production" && {
-      cookie: {
-        secure: true,
-        sameSite: "none",
-      },
-    }),
   },
+  // Proper cookie configuration for Vercel (HTTPS) production
+  ...(process.env.NODE_ENV === "production" && {
+    cookies: {
+      sessionToken: {
+        name: `__Secure-next-auth.session-token`,
+        options: {
+          httpOnly: true,
+          sameSite: "lax",
+          path: "/",
+          secure: true,
+        },
+      },
+    },
+  }),
   providers: [
     CredentialsProvider({
       name: "Medicxus Control Portal",
