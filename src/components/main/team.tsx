@@ -9,7 +9,7 @@ export default function Team() {
     {
       name: "Mr. Maqsood Awan",
       role: "CEO - Medicxus Diagnostics",
-      bio: "As Chief Executive Officer, serves as the principal decision-maker for Medicxus Diagnostics, overseeing daily operations, strategic planning, and organizational growth. Ensures seamless execution across all departments while driving the group's mission of delivering excellence in diagnostic and healthcare services.",
+      bio: "As the Chief Executive Officer of Medicxus Diagnostic Lab, a part of Medicxus Group, he oversees the laboratory’s management, strategic planning, and overall operations, ensuring its continued growth and excellence in diagnostic healthcare services.",
       projects: [],
       showProjects: false,
       image: "/teamphotos/image9.png",
