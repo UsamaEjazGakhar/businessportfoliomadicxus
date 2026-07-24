@@ -7,6 +7,16 @@ export default function Team() {
 
   const teamMembers = [
     {
+      name: "Mr. Maqsood Awan",
+      role: "CEO - Medicxus Diagnostics",
+      bio: "As Chief Executive Officer, serves as the principal decision-maker for Medicxus Diagnostics, overseeing daily operations, strategic planning, and organizational growth. Ensures seamless execution across all departments while driving the group's mission of delivering excellence in diagnostic and healthcare services.",
+      projects: [],
+      showProjects: false,
+      image: "/teamphotos/image9.png",
+      color: "#0F4C81",
+      objectPosition: "center 15%",
+    },
+    {
       name: "Usama Ejaz",
       role: "IT Head - Medicxus Group",
       bio: "Oversees all IT operations, project development, and technical strategy. Partner in both Lab Management and Hospital Management System projects, serving as Product Owner for these initiatives.",
@@ -54,6 +64,16 @@ export default function Team() {
       showProjects: false,
       image: "/teamphotos/image8.png",
       color: "#14B8A6",
+      objectPosition: "top",
+    },
+    {
+      name: "Dr. M. A. Yousaf",
+      role: "MBBS, RMP 1987 | Diploma in Anesthesia & Pain Medicine, Yale University",
+      bio: "Graduated in 1987 with nearly four decades of clinical experience. Completed residency training in anesthesiology and pain medicine at Yale University, later practicing in the United States and Australia in senior clinical leadership roles. Since 2021, has served in maritime medicine aboard vessels ranging from under 200 to over 8,000 passengers and crew, delivering care across all seven continents and five oceans, including Antarctica and the Arctic.",
+      projects: [],
+      showProjects: false,
+      image: "/teamphotos/image10.png",
+      color: "#0F4C81",
       objectPosition: "top",
     },
     {
@@ -108,9 +128,9 @@ export default function Team() {
     },
   ];
 
-  // Split into rows: 2, then 4, then 4
+  // Split into rows: 3, then 3, then 3, then 3
   const rows: (typeof teamMembers)[] = [];
-  const rowSizes = [2, 4, 4];
+  const rowSizes = [3, 3, 3, 3];
   let cursor = 0;
   for (const size of rowSizes) {
     rows.push(teamMembers.slice(cursor, cursor + size));
@@ -311,7 +331,7 @@ export default function Team() {
         </p>
       </div>
 
-      {/* Team Rows: 2 - 4 - 4 */}
+      {/* Team Rows: 3 - 3 - 3 - 3 */}
       <div
         style={{
           display: "flex",
