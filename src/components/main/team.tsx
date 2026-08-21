@@ -47,16 +47,6 @@ export default function Team() {
       objectPosition: "top",
     },
     {
-      name: "Dr. Ayesha Ellahi",
-      role: "Consultant Hematologist",
-      bio: "MBBS, M.Phil, PhD Hematology. Provides expert consultation in hematology, supporting patient diagnosis and treatment planning across the Medicxus Group's healthcare network.",
-      projects: [],
-      showProjects: false,
-      image: "/teamphotos/image2.png",
-      color: "#14B8A6",
-      objectPosition: "top",
-    },
-    {
       name: "Dr. Asim Munir",
       role: "Microbiologist",
       bio: "M.Phil., Ph.D., Postdoctoral Researcher (Microbiology). Provides expert microbiological analysis and research support, contributing to the diagnostic accuracy and scientific excellence of the Medicxus Group's laboratory services. Expertise includes antimicrobial resistance (AMR), microbial genomics, molecular epidemiology, plasmid biology, and One Health research.",
