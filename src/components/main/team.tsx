@@ -6,6 +6,16 @@ export default function Team() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const teamMembers = [
+      {
+      name: "Usama Ejaz",
+      role: "IT Head - Medicxus Group",
+      bio: "Oversees all IT operations, project development, and technical strategy. Partner in both Lab Management and Hospital Management System projects, serving as Product Owner for these initiatives.",
+      projects: ["Lab Management System", "Hospital Management System"],
+      showProjects: true,
+      image: "/teamphotos/usamapic.jpeg",
+      color: "#14B8A6",
+      objectPosition: "top",
+    },
     {
       name: "Mr. Maqsood Awan",
       role: "CEO - Medicxus Diagnostics",
@@ -15,16 +25,6 @@ export default function Team() {
       image: "/teamphotos/image9.png",
       color: "#0F4C81",
       objectPosition: "center 15%",
-    },
-    {
-      name: "Usama Ejaz",
-      role: "IT Head - Medicxus Group",
-      bio: "Oversees all IT operations, project development, and technical strategy. Partner in both Lab Management and Hospital Management System projects, serving as Product Owner for these initiatives.",
-      projects: ["Lab Management System", "Hospital Management System"],
-      showProjects: true,
-      image: "/teamphotos/usamapic.jpeg",
-      color: "#14B8A6",
-      objectPosition: "top",
     },
     {
       name: "Maqsood Gul",
